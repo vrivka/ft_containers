@@ -96,39 +96,30 @@ public:
 
 	explicit vector(const allocator_type& alloc = allocator_type()) : A(alloc), len(0), cap(0) {
 		arr = A.allocate(0);
-		std::cout << arr << std::endl;
 	};
-
-
-
 	explicit vector(size_type n, const value_type &val = value_type(), const allocator_type& alloc = allocator_type()) : A(alloc), len(n), cap(n) {
 		arr = A.allocate(cap);
 		for (size_type i = 0; i < len; i++)
 			A.construct(arr + i, val);
-		std::cout << arr << std::endl;
 	};
-
-
-
-
 	template <class InputIterator>
 	vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()) : A(alloc), len(0), cap(0) {
 		for (; first + len != last; ++cap, ++len);
 		arr = A.allocate(cap);
 		for (size_type i = 0; first + i != last; ++i)
 			A.construct(&arr[i], *(first + i));
-		std::cout << arr << std::endl;
 	};
 	vector(const vector& x) : A(x.A), len(x.len), cap(x.cap) {
 		arr = A.allocate(cap);
 		for (int i = 0; i < len; i++)
 			A.construct(&arr[i], x.arr[i]);
-		std::cout << arr << std::endl;
 	};
 
 	/* Destructor */
 
 	~vector() {
+		for (int i = 0; i < len; i++)
+			A.destroy(&arr[i]);
 		A.deallocate(arr, len);
 	}
 

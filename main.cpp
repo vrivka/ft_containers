@@ -1,12 +1,6 @@
 #include <iostream>
 #include "ft_vector.hpp"
 #include <vector>
-static int k = 0;
-
-int printc() {
-	std::cout << "print" << std::endl;
-	return (k++);
-}
 
 class A {
 public:
@@ -14,14 +8,18 @@ public:
 	int *a;
 
 	void print() const {
-		for (int c = 0; c < 10; c++)
+		for (int c = 0; c < 5; c++)
 			std::cout << a[c] << std::endl;
 	}
-	A() : i(printc()), a(new int[10]()) {
-		for (int c = 0; c < 10; c++)
+	A() : i(1), a(new int[5]()) {
+		for (int c = 0; c < 5; c++)
 			a[c] = c;
-		std::cout << "const" << std::endl; }
-	~A() { std::cout << "des" << std::endl; delete [] a; }
+		std::cout << "const " << this << std::endl; };
+	A(A const &r) : i(r.i), a(new int[5]()) {
+		for (int t = 0; t < 5; t++)
+			a[t] = r.a[t];
+		std::cout << "copy const " << this << std::endl; };
+	~A() { std::cout << "des " << this << std::endl; delete [] a; }
 };
 
 
@@ -31,11 +29,19 @@ int main() {
 //	::vector<int> b(10u, 100);
 //	::vector<int> c(b);
 //	::vector<std::string> d(arr, arr + 6);
-	::vector<A> e(10);
+	A a;
+	A b[500];
+	std::vector<A> c(500);
+	std::vector<A> d(500, a);
+	std::vector<A> e(b, b+500);
+	std::vector<A> f(c);
+	std::vector<A> g(d);
+	std::vector<A> h(e);
 
-	e.arr[0].a[0] = 111111111;
-	for(int m = 0; m < 10; ++m)
-		e.arr[m].print();
+
+//	e.arr[0].a[0] = 111111111;
+//	for(int m = 0; m < 5; ++m)
+//		e.arr[m].print();
 	//	for (int i = 0; i < 10; i++)
 //		std::cout << b.arr[i] << std::endl;
 //	for (int i = 0; i < 10; i++)
