@@ -14,39 +14,106 @@ public:
 	A() : i(1), a(new int[5]()) {
 		for (int c = 0; c < 5; c++)
 			a[c] = c;
-		std::cout << "const " << this << std::endl; };
+		std::cout << "const" << std::endl; };
 	A(A const &r) : i(r.i), a(new int[5]()) {
 		for (int t = 0; t < 5; t++)
 			a[t] = r.a[t];
-		std::cout << "copy const " << this << std::endl; };
-	~A() { std::cout << "des " << this << std::endl; delete [] a; }
+		std::cout << "copy const" << std::endl; };
+	~A() { std::cout << "des" << std::endl; delete [] a; }
+	bool operator==(const A &other) const {
+		if (i == other.i) {
+			for (int i = 0; i < 5; i++) {
+				if (a[i] == other.a[i])
+					continue;
+				else
+					return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	bool operator!=(const A &other) const {
+		return !(*this == other);
+	}
+	bool operator<(const A &other) const {
+		if (i < other.i) {
+			for (int i = 0; i < 5; i++) {
+				if (a[i] < other.a[i])
+					continue ;
+				else
+					return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	bool operator<=(const A &other) const {
+		return !(other < *this);
+	}
+	bool operator>(const A &other) const {
+		return other < *this;
+	}
+	bool operator>=(const A &other) const {
+		return !(*this < other);
+	}
 };
 
 
 int main() {
-//	std::string arr[6] = {"4","8","15","16","23","42"};
-//	::vector<int> a;
-//	::vector<int> b(10u, 100);
-//	::vector<int> c(b);
-//	::vector<std::string> d(arr, arr + 6);
-	A a;
-	A b[500];
-	std::vector<A> c(500);
-	std::vector<A> d(500, a);
-	std::vector<A> e(b, b+500);
-	std::vector<A> f(c);
-	std::vector<A> g(d);
-	std::vector<A> h(e);
+//	A a;
+//	A b[500];
+//	std::vector<A> c(500);
+//	std::vector<A> d(500, a);
+//	std::vector<A> e(b, b+500);
+//	std::vector<A> f(c);
+//	std::vector<A> g(d);
+//	std::vector<A> h(e);
+//	A b;
+//	std::cout << std::endl;
 
+	::vector<int> a(5u, 10);
+	::vector<int> b(5u, 10);
+	std::cout << std::endl;
 
-//	e.arr[0].a[0] = 111111111;
-//	for(int m = 0; m < 5; ++m)
-//		e.arr[m].print();
-	//	for (int i = 0; i < 10; i++)
-//		std::cout << b.arr[i] << std::endl;
-//	for (int i = 0; i < 10; i++)
-//		std::cout << c.arr[i] << std::endl;
-//	for (int i = 0; i < 6; i++)
-//		std::cout << d.arr[i] << std::endl;
+//	a[3] = 9;
+//	a[2] = 11;
+	if (a > b)
+		std::cout << "true\n";
+	else
+		std::cout << "false\n";
+//	a.swap(b);
+//	std::cout << a.size() << std::endl;
+//	std::cout << a.capacity() << std::endl;
+//	a.clear();
+//	std::cout << a.size() << std::endl;
+//	std::cout << a.capacity() << std::endl;
+//	std::cout << b.size() << std::endl;
+//	std::cout << b.capacity() << std::endl;
+//	a.pop_back();
+//	a.pop_back();
+//	a.pop_back();
+//	a.pop_back();
+//	a.pop_back();
+//	a.push_back(b);
+//	std::cout << std::endl;
+//	std::cout << std::endl;
+//
+//	a.assign(6, A());
+//	std::cout << std::endl;
+
+//	A d = a.back();
+//	try {
+//		A const d = a.at(0);
+//	}
+//	catch (std::out_of_range &oor) {
+//		std::cerr << oor.what() << std::endl;
+//	}
+//	a.resize(7, A());
+//	a.resize(1);
+//	std::cout << a.size() << std::endl;
+//	std::cout << a.capacity() << std::endl;
+//	std::cout << a.max_size() << std::endl;
+//	std::cout << a.empty() << std::endl;
+//	a[0].print();
 	return 0;
 }
