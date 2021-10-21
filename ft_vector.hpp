@@ -3,45 +3,43 @@
 
 #include <memory>
 #include <iostream>
-
-//template<class T, class Category = std::random_access_iterator_tag>
-//class iterator : public std::iterator<Category, T> {
-//	typedef Category iterator_category;	//	the first template parameter (Category)
-//	typedef T value_type;				//	the second template parameter (T)
-//	typedef ptrdiff_t difference_type;	//	the third template parameter (Distance)	defaults to: ptrdiff_t
-//	typedef T* pointer;					//	the fourth template parameter (Pointer)	defaults to: T*
-//	typedef T& reference;				//	the fifth template parameter (Reference)	defaults to: T&
-//};
+#include "ft_iterator.hpp"
+#include "ft_reverse_iterator.hpp"
 
 template <class T, class Alloc = std::allocator<T> >
 class vector {
 public:
-	typedef T											value_type;			//	The first template parameter (T)
-	typedef Alloc										allocator_type;		//	The second template parameter (Alloc)	defaults to: allocator<value_type>
-	typedef typename allocator_type::reference			reference ;			//	for the default allocator: value_type&
-	typedef typename allocator_type::const_reference 	const_reference;	//	for the default allocator: const value_type&
-	typedef typename allocator_type::pointer			pointer;			//	for the default allocator: value_type*
-	typedef typename allocator_type::const_pointer		const_pointer;		//	for the default allocator: const value_type*
-	//typedef  iterator;//	a random access iterator to value_type	convertible to const_iterator
-	//typedef  const_iterator;//	a random access iterator to const value_type
-	//typedef  reverse_iterator;//	reverse_iterator<iterator>
-	//typedef  const_reverse_iterator;//	reverse_iterator<const_iterator>
-	typedef ptrdiff_t									difference_type;	//	a signed integral type, identical to: iterator_traits<iterator>::difference_type	usually the same as ptrdiff_t
-	typedef size_t										size_type;			//	an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
-
+	typedef T											value_type;				//	The first template parameter (T)
+	typedef Alloc										allocator_type;			//	The second template parameter (Alloc)	defaults to: allocator<value_type>
+	typedef typename allocator_type::reference			reference ;				//	for the default allocator: value_type&
+	typedef typename allocator_type::const_reference 	const_reference;		//	for the default allocator: const value_type&
+	typedef typename allocator_type::pointer			pointer;				//	for the default allocator: value_type*
+	typedef typename allocator_type::const_pointer		const_pointer;			//	for the default allocator: const value_type*
+	typedef ft::iterator<pointer>						iterator;				//	a random access iterator to value_type	convertible to const_iterator
+	typedef ft::iterator<const_pointer>					const_iterator;			//	a random access iterator to const value_type
+	typedef ft::reverse_iterator<iterator>				reverse_iterator;		//	reverse_iterator<iterator>
+	typedef ft::reverse_iterator<const_iterator>			const_reverse_iterator;	//	reverse_iterator<const_iterator>
+	typedef ptrdiff_t									difference_type;		//	a signed integral type, identical to: iterator_traits<iterator>::difference_type	usually the same as ptrdiff_t
+	typedef size_t										size_type;				//	an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
+private:
+	allocator_type A;
+	size_type len;
+	size_type cap;
+	pointer arr;
+public:
 	/* Iterators */
 
-	//iterator begin();
-	//const_iterator begin() const; //Return iterator to beginning (public member function )
+	iterator begin() { return arr; };
+	const_iterator begin() const { return arr; }; //Return iterator to beginning (public member function )
 
-	//iterator end();
-	//const_iterator end() const; //Return iterator to end (public member function )
+	iterator end() { return arr + len; };
+	const_iterator end() const { return arr + len; }; //Return iterator to end (public member function )
 
-	//reverse_iterator rbegin();
-	//const_reverse_iterator rbegin() const; //Return reverse iterator to reverse beginning (public member function )
+	reverse_iterator rbegin() { return end() - 1; };
+	const_reverse_iterator rbegin() const { return end() - 1; }; //Return reverse iterator to reverse beginning (public member function )
 
-	//reverse_iterator rend();
-	//const_reverse_iterator rend() const; //Return reverse iterator to reverse end (public member function )
+	reverse_iterator rend() { return begin() - 1; };
+	const_reverse_iterator rend() const { return begin() - 1; }; //Return reverse iterator to reverse end (public member function )
 
 	/* Capacity */
 
@@ -159,13 +157,36 @@ public:
 		len -= 1;
 	};													//	Delete last element (public member function )
 
-//	iterator insert (iterator position, const value_type& val);// single element (1)
-//	void insert (iterator position, size_type n, const value_type& val);// fill (2)
-//	template <class InputIterator>
-//	void insert (iterator position, InputIterator first, InputIterator last);// Insert elements (public member function ) range (3)
-//
-//	iterator erase (iterator position);
-//	iterator erase (iterator first, iterator last); //Erase elements (public member function )
+	iterator insert (iterator position, const value_type& val) {
+		if (cap == len) {
+			pointer new_arr;
+			size_type old_cap = cap;
+			size_type i = 0;
+
+			cap *= 2;
+			new_arr = A.allocate(cap);
+			for (; arr + i != position; i++)
+				A.construct(new_arr + i, arr[i]);
+			A.construct(new_arr + i, val);
+		}
+	};// single element (1)
+
+	void insert (iterator position, size_type n, const value_type& val) {
+
+	};// fill (2)
+
+	template <class InputIterator>
+	void insert (iterator position, InputIterator first, InputIterator last) {
+
+	};// Insert elements (public member function ) range (3)
+
+	iterator erase (iterator position) {
+
+	};
+
+	iterator erase (iterator first, iterator last) {
+
+	}; //Erase elements (public member function )
 
 	void swap(vector &x) {
 		pointer tmp_arr = arr;
@@ -229,9 +250,7 @@ public:
 	/* Non-member function overloads */
 
 	template <class V, class alloc>
-	friend void swap(vector<V,alloc> &x, vector<V,alloc> &y) {
-		x.swap(y);
-	};
+	friend void swap(vector<V,alloc> &x, vector<V,alloc> &y) { x.swap(y); };
 
 	/* relational operators */
 
@@ -260,12 +279,6 @@ public:
 	friend bool operator<=(	const vector<T,Alloc> &lhs,	const vector<T,Alloc> &rhs) { return !(rhs < lhs); }
 	friend bool operator>(	const vector<T,Alloc> &lhs,	const vector<T,Alloc> &rhs) { return rhs < lhs; }
 	friend bool operator>=(	const vector<T,Alloc> &lhs,	const vector<T,Alloc> &rhs) { return !(lhs < rhs); } // Relational operators for vector (function template )
-
-private:
-	allocator_type A;
-	size_type len;
-	size_type cap;
-	pointer arr;
 };
 
 #endif
