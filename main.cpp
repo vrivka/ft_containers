@@ -62,12 +62,12 @@ public:
 
 
 int main() {
-	std::vector<A> a(5);
+	::vector<A> a(5);
 	std::cout << std::endl;
 	a.insert(a.begin() += 3, A());
 	std::cout << std::endl;
-	a.insert(a.begin() += 3, A());
-	std::cout << std::endl;
+//	a.insert(a.begin() += 3, A());
+//	std::cout << std::endl;
 	std::cout << a.size() << std::endl;
 	std::cout << a.capacity() << std::endl;
 	std::cout << std::endl;

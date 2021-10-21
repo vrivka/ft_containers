@@ -46,11 +46,11 @@ public:
 	};
 
 	iterator<iterator_type> &operator+=(difference_type n) {
-		*this->iter += n;
+		this->iter += n;
 		return *this;
 	};
 	iterator<iterator_type> &operator+=(difference_type n) const {
-		*this->iter += n;
+		this->iter += n;
 		return *this;
 	};
 
@@ -71,11 +71,11 @@ public:
 	};
 
 	iterator<iterator_type> &operator-=(difference_type n) {
-		*this->iter -= n;
+		this->iter -= n;
 		return *this;
 	};
 	iterator<iterator_type> &operator-=(difference_type n) const {
-		*this->iter -= n;
+		this->iter -= n;
 		return *this;
 	};
 

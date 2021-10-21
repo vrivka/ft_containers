@@ -132,7 +132,12 @@ public:
 	};					//	Assign vector content (public member function )
 
 	void push_back(const value_type& val) {
-		if (cap == len) {
+		if (cap == 0) {
+			cap = 1;
+			arr = A.allocate(cap);
+			A.construct(arr, val);
+		}
+		else if (cap == len) {
 			pointer new_arr;
 			size_type old_cap = cap;
 
@@ -145,12 +150,10 @@ public:
 				A.destroy(arr + i);
 			A.deallocate(arr, old_cap);
 			arr = new_arr;
-			len += 1;
 		}
-		else {
+		else
 			A.construct(&arr[len], val);
-			len += 1;
-		}
+		len += 1;
 	};							//	Add element at the end (public member function )
 	void pop_back() {
 		A.destroy(arr + (len - 1));
@@ -158,6 +161,11 @@ public:
 	};													//	Delete last element (public member function )
 
 	iterator insert (iterator position, const value_type& val) {
+		if (cap == 0) {
+			cap = 1;
+			arr = A.allocate(cap);
+			A.construct(arr, val);
+		}
 		if (cap == len) {
 			pointer new_arr;
 			size_type old_cap = cap;
@@ -168,8 +176,33 @@ public:
 			for (; arr + i != position; i++)
 				A.construct(new_arr + i, arr[i]);
 			A.construct(new_arr + i, val);
+			for (size_type ii = i++; ii < len; ii++, i++)
+				A.construct(new_arr + i, arr[ii]);
+			for (i = 0; i < len; i++)
+				A.destroy(arr + i);
+			A.deallocate(arr, old_cap);
+			arr = new_arr;
 		}
-	};// single element (1)
+		else {
+			pointer new_arr;
+			size_type old_cap = cap;
+			size_type i = 0;
+
+			cap *= 2;
+			new_arr = A.allocate(cap);
+			for (; arr + i != position; i++)
+				A.construct(new_arr + i, arr[i]);
+			A.construct(new_arr + i, val);
+			for (size_type ii = i++; ii < len; ii++, i++)
+				A.construct(new_arr + i, arr[ii]);
+			for (i = 0; i < len; i++)
+				A.destroy(arr + i);
+			A.deallocate(arr, old_cap);
+			arr = new_arr;
+		}
+		len += 1;
+		return position;
+	}; // single element (1)
 
 	void insert (iterator position, size_type n, const value_type& val) {
 
