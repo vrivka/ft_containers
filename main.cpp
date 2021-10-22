@@ -9,128 +9,57 @@ public:
 	int i;
 	int *a;
 
-	void print() const {
-		for (int c = 0; c < 5; c++)
-			std::cout << a[c] << std::endl;
-	}
-	A() : i(1), a(new int[5]()) {
-		for (int c = 0; c < 5; c++)
-			a[c] = c;
-		std::cout << "const" << std::endl; };
-	A(A const &r) : i(r.i), a(new int[5]()) {
-		for (int t = 0; t < 5; t++)
-			a[t] = r.a[t];
-		std::cout << "copy const" << std::endl; };
-	~A() { std::cout << "des" << std::endl; delete [] a; }
-	bool operator==(const A &other) const {
-		if (i == other.i) {
-			for (int i = 0; i < 5; i++) {
-				if (a[i] == other.a[i])
-					continue;
-				else
-					return false;
-			}
-			return true;
-		}
-		return false;
-	}
-	bool operator!=(const A &other) const {
-		return !(*this == other);
-	}
-	bool operator<(const A &other) const {
-		if (i < other.i) {
-			for (int i = 0; i < 5; i++) {
-				if (a[i] < other.a[i])
-					continue ;
-				else
-					return false;
-			}
-			return true;
-		}
-		return false;
-	}
-	bool operator<=(const A &other) const {
-		return !(other < *this);
-	}
-	bool operator>(const A &other) const {
-		return other < *this;
-	}
-	bool operator>=(const A &other) const {
-		return !(*this < other);
-	}
+	A() : i(0), a(new int[5]()) { std::cout << "constructor\n"; };
+	A(int i) : i(i), a(new int[5]()) { std::cout << i << " int constructor\n"; };
+	A(A const &r) : i(r.i), a(new int[5]()) { std::cout << r.i << " copy constructor\n"; };
+	~A() { std::cout << i << " destructor\n"; delete [] a; }
+	A &operator=(A const &other) { std::cout << other.i << " assign operator\n"; if (this == &other) return *this; this->i = other.i; return *this; };
+	bool operator==(const A &other) const { std::cout << other.i << " equal operator\n"; return i == other.i; }
+	bool operator!=(const A &other) const { std::cout << other.i << " not equal operator\n"; return !(*this == other); }
+	bool operator<(const A &other) const { std::cout << other.i << " less operator\n"; return i < other.i; }
+	bool operator<=(const A &other) const { std::cout << other.i << " less-equal operator\n"; return i <= other.i; }
+	bool operator>(const A &other) const { std::cout << other.i << " more operator\n"; return i > other.i; }
+	bool operator>=(const A &other) const { std::cout << other.i << " more-equal operator\n"; return i >= other.i; }
 };
 
+void func1(A &i) {
+	std::cout << ' ' << i.i;
+}
+
+bool func2(int i) {
+	return i == 4 * 4;
+}
+
+bool func3(int i) {
+	return i <= 11;
+}
+
+int gen() {
+	return rand() % 100;
+}
 
 int main() {
-	::vector<A> a(5);
-	std::cout << std::endl;
-	a.insert(a.begin() += 3, A());
-	std::cout << std::endl;
-//	a.insert(a.begin() += 3, A());
-//	std::cout << std::endl;
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
-	std::cout << std::endl;
+	A arr[5] = {1, 2, 3, 4, 5};
+	std::cout << "\n";
+	A b(0);
+	std::cout << "\n";
+	A c(6);
+	std::cout << "\n";
+	A d(7);
+	std::cout << "\n";
+	std::vector<A> a(arr, arr + 5);
+	std::cout << "\n";
 
-//	::vector<int>::difference_type len = a.rbegin() - a.rend();
-
-//	std::cout << *std::find(a.rbegin(), a.rend(), 7) << std::endl;
-//	for (int d = 0; d < 10; d++)
-//		std::cout << a[d] << std::endl;
-	/*	A a;
-	A b[500];
-	std::vector<A> c(500);
-	std::vector<A> d(500, a);
-	std::vector<A> e(b, b+500);
-	std::vector<A> f(c);
-	std::vector<A> g(d);
-	std::vector<A> h(e);
-	A b;
-	std::cout << std::endl;
-
-	::vector<int> a(5u, 10);
-	::vector<int> b(5u, 10);
-	std::cout << std::endl;
-
-	a[3] = 9;
-	a[2] = 11;
-	if (a > b)
-		std::cout << "true\n";
-	else
-		std::cout << "false\n";
-	a.swap(b);
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
-	a.clear();
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
-	std::cout << b.size() << std::endl;
-	std::cout << b.capacity() << std::endl;
-	a.pop_back();
-	a.pop_back();
-	a.pop_back();
-	a.pop_back();
-	a.pop_back();
-	a.push_back(b);
-	std::cout << std::endl;
-	std::cout << std::endl;
-
-	a.assign(6, A());
-	std::cout << std::endl;
-
-	A d = a.back();
-	try {
-		A const d = a.at(0);
-	}
-	catch (std::out_of_range &oor) {
-		std::cerr << oor.what() << std::endl;
-	}
-	a.resize(7, A());
-	a.resize(1);
-	std::cout << a.size() << std::endl;
-	std::cout << a.capacity() << std::endl;
-	std::cout << a.max_size() << std::endl;
-	std::cout << a.empty() << std::endl;
-	a[0].print();*/
-	return 0;
+	a.insert(a.begin() + 1, 1, c);
+	std::cout << "\n";
+	a.insert(a.end(), 2, d);
+	std::cout << "\n";
+	a.insert(a.begin(), 1, c);
+	std::cout << "\n";
+	a.insert(a.end() - 5, 11, d);
+	std::cout << "\n";
+//	a.insert(a.end(), d);
+//	std::cout << "\n";
+	std::for_each(a.begin(), a.end(), func1)(b);
+	std::cout << "\nsize: " << a.size() << "\ncapacity: " << a.capacity() << std::endl;
 }
