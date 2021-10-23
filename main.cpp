@@ -34,11 +34,19 @@ bool func3(int i) {
 	return i <= 11;
 }
 
-int i = 0;
+int ge = 0;
 
 int gen() {
-	return i++;
+	return ge++;
 }
 
 int main() {
+	ft::vector<int> a(10u, 100);
+
+	ft::vector<int>::iterator b = a.begin();
+
+	*(b + 5) = 15;
+	for (int i = 0; i < 10; i++)
+		std::cout << a[i] << std::endl;
+
 }
