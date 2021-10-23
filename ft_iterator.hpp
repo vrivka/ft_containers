@@ -4,7 +4,7 @@
 #include "iterator_traits.hpp"
 
 namespace ft {
-template<class V, class Category = std::random_access_iterator_tag>
+template<class V>
 class vec_iterator {
 public:
 	typedef V													iterator_type;		//	Iterator's type
@@ -49,10 +49,6 @@ public:
 		this->iter += n;
 		return *this;
 	};
-	vec_iterator<iterator_type> &operator+=(difference_type n) const {
-		this->iter += n;
-		return *this;
-	};
 
 	vec_iterator<iterator_type> operator-(difference_type n) { return iter - n; };
 	vec_iterator<iterator_type> operator-(difference_type n) const { return iter - n; };
@@ -74,18 +70,10 @@ public:
 		this->iter -= n;
 		return *this;
 	};
-	vec_iterator<iterator_type> &operator-=(difference_type n) const {
-		this->iter -= n;
-		return *this;
-	};
 
 	pointer operator->() const { return iter; };
 
 	vec_iterator<iterator_type> &operator=(vec_iterator<iterator_type> const &other) {
-		this->iter = other.iter;
-		return *this;
-	};
-	vec_iterator<iterator_type> &operator=(vec_iterator<iterator_type> const &other) const {
 		this->iter = other.iter;
 		return *this;
 	};

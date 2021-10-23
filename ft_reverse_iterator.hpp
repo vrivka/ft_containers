@@ -15,10 +15,10 @@ public:
 	typedef typename ft::iterator_traits<Iterator>::reference reference;//	Preserves Iterator's reference type
 private:
 	iterator_type iter;
+	reverse_vec_iterator(iterator_type x) : iter(x) {};
 public:
 	reverse_vec_iterator() : iter() {};
 	reverse_vec_iterator(reverse_vec_iterator const &other) : iter(other.iter) {};
-	reverse_vec_iterator(iterator_type x) : iter(x) {};
 	~reverse_vec_iterator() {};
 
 	/* Member functions */
@@ -44,10 +44,6 @@ public:
 		this->iter -= n;
 		return *this;
 	};
-	reverse_vec_iterator<iterator_type> &operator+=(difference_type n) const {
-		this->iter -= n;
-		return *this;
-	};
 
 	reverse_vec_iterator<iterator_type> operator-(difference_type n) { return this->iter + n; };
 	reverse_vec_iterator<iterator_type> operator-(difference_type n) const { return this->iter + n; };
@@ -69,18 +65,10 @@ public:
 		this->iter += n;
 		return *this;
 	};
-	reverse_vec_iterator<iterator_type> &operator-=(difference_type n) const {
-		this->iter += n;
-		return *this;
-	};
 
 	pointer operator->() const { return iter; };
 
 	reverse_vec_iterator<iterator_type> &operator=(reverse_vec_iterator<iterator_type> const &other) {
-		this->iter = other.iter;
-		return *this;
-	};
-	reverse_vec_iterator<iterator_type> &operator=(reverse_vec_iterator<iterator_type> const &other) const {
 		this->iter = other.iter;
 		return *this;
 	};

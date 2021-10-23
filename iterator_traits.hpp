@@ -3,7 +3,7 @@
 
 #include <iterator>
 
-namespace ft{
+namespace ft {
 	template <class Iterator>
 	class iterator_traits {
 	public:
@@ -25,9 +25,9 @@ namespace ft{
 		typedef T* pointer;
 		typedef	T& reference;
 		typedef	std::random_access_iterator_tag iterator_category;
-		iterator_traits() {};
-		iterator_traits(const iterator_traits<T*> &) {};
-		~iterator_traits() {};
+		iterator_traits<T*>() {};
+		iterator_traits<T*>(const iterator_traits<T*> &) {};
+		~iterator_traits<T*>() {};
 		iterator_traits<T*> &operator=(const iterator_traits<T*> &) { return *this; };
 	};
 	template <class T>
@@ -38,9 +38,9 @@ namespace ft{
 		typedef const T* pointer;
 		typedef	const T& reference;
 		typedef	std::random_access_iterator_tag iterator_category;
-		iterator_traits() {};
-		iterator_traits(const iterator_traits<const T*> &) {};
-		~iterator_traits() {};
+		iterator_traits<const T*>() {};
+		iterator_traits<const T*>(const iterator_traits<const T*> &) {};
+		~iterator_traits<const T*>() {};
 		iterator_traits<const T*> &operator=(const iterator_traits<const T*> &) { return *this; };
 	};
 }

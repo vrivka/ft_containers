@@ -6,192 +6,247 @@
 #include "ft_iterator.hpp"
 #include "ft_reverse_iterator.hpp"
 
-namespace ft{
+namespace ft {
 template<class T, class Alloc = std::allocator<T> >
 class vector {
 public:
-	typedef T value_type;                //	The first template parameter (T)
-	typedef Alloc allocator_type;            //	The second template parameter (Alloc)	defaults to: allocator<value_type>
-	typedef typename allocator_type::reference reference;                //	for the default allocator: value_type&
-	typedef typename allocator_type::const_reference const_reference;        //	for the default allocator: const value_type&
-	typedef typename allocator_type::pointer pointer;                //	for the default allocator: value_type*
-	typedef typename allocator_type::const_pointer const_pointer;            //	for the default allocator: const value_type*
-	typedef ft::vec_iterator<pointer> iterator;                //	a random access iterator to value_type	convertible to const_iterator
-	typedef ft::vec_iterator<const_pointer> const_iterator;            //	a random access iterator to const value_type
-	typedef ft::reverse_vec_iterator<iterator> reverse_iterator;        //	reverse_iterator<iterator>
-	typedef ft::reverse_vec_iterator<const_iterator> const_reverse_iterator;    //	reverse_iterator<const_iterator>
-	typedef ptrdiff_t difference_type;        //	a signed integral type, identical to: iterator_traits<iterator>::difference_type	usually the same as ptrdiff_t
-	typedef size_t size_type;                //	an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
+	typedef T														value_type;				//	The first template parameter (T)
+	typedef Alloc													allocator_type;			//	The second template parameter (Alloc) defaults to: allocator<value_type>
+	typedef typename allocator_type::reference						reference;				//	for the default allocator: value_type&
+	typedef typename allocator_type::const_reference				const_reference;		//	for the default allocator: const value_type&
+	typedef typename allocator_type::pointer						pointer;				//	for the default allocator: value_type*
+	typedef typename allocator_type::const_pointer					const_pointer;			//	for the default allocator: const value_type*
+	typedef ft::vec_iterator<pointer>								iterator;				//	a random access iterator to value_type	convertible to const_iterator
+	typedef ft::vec_iterator<const_pointer>							const_iterator;			//	a random access iterator to const value_type
+	typedef ft::reverse_vec_iterator<iterator>						reverse_iterator;		//	reverse_iterator<iterator>
+	typedef ft::reverse_vec_iterator<const_iterator>				const_reverse_iterator;	//	reverse_iterator<const_iterator>
+	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;		//	a signed integral type, identical to: iterator_traits<iterator>::difference_type usually the same as ptrdiff_t
+	typedef size_t													size_type;				//	an unsigned integral type that can represent any non-negative value of difference_type usually the same as size_t
 private:
-	allocator_type A;
-	size_type len;
-	size_type cap;
-	pointer arr;
+	allocator_type	A;
+	size_type		len;
+	size_type		cap;
+	pointer			arr;
 public:
-	/* Iterators */
+	///*	Iterators	*/
 
-	iterator begin() { return arr; };
+	/*	Return iterator to beginning	*/
+	iterator				begin() { return arr; }
 
-	const_iterator begin() const { return arr; }; //Return iterator to beginning (public member function )
+	const_iterator			begin() const { return arr; }
 
-	iterator end() { return arr + len; };
+	/*	Return iterator to end	*/
+	iterator				end() { return arr + len; }
 
-	const_iterator end() const { return arr + len; }; //Return iterator to end (public member function )
+	const_iterator			end() const { return arr + len; }
 
-	reverse_iterator rbegin() { return end() - 1; };
+	/*	Return reverse iterator to reverse beginning	*/
+	reverse_iterator		rbegin() { return end() - 1; }
 
-	const_reverse_iterator rbegin() const {
-		return end() - 1;
-	}; //Return reverse iterator to reverse beginning (public member function )
+	const_reverse_iterator	rbegin() const { return end() - 1; }
 
-	reverse_iterator rend() { return begin() - 1; };
+	/*	Return reverse iterator to reverse end	*/
+	reverse_iterator		rend() { return begin() - 1; }
 
-	const_reverse_iterator rend() const {
-		return begin() - 1;
-	}; //Return reverse iterator to reverse end (public member function )
+	const_reverse_iterator	rend() const { return begin() - 1; }
 
-	/* Capacity */
+	///*	Capacity	*/
 
-	size_type size() const { return len; };                                    //	Return size (public member function )
-	size_type max_size() const { return A.max_size(); };            //	Return maximum size (public member function )
-	void resize(size_type n, value_type const &val = value_type()) {
+	/*	Return size	*/
+	size_type	size() const { return len; }
+
+	/*	Return maximum size	*/
+	size_type	max_size() const { return A.max_size(); }
+
+	/*	Change size	*/
+	void		resize(size_type n) {
+		size_type i;
+
 		if (n < len) {
-			for (size_type i = n; i < len; i++)
-				A.destroy(arr + i);
-		} else if (n > len) {
+			for (i = len; i > n; i--)
+				A.destroy(arr + i - 1);
+		}
+		else if (n > len) {
+			size_type old_cap = cap;
 			if (n > cap)
 				cap = n > cap * 2 ? n : cap * 2;
 			pointer new_arr = A.allocate(cap);
-			for (size_type i = 0; i < len; i++)
-				A.construct(new_arr + i, arr[i]);
-			for (size_type i = len; i < n; i++)
-				A.construct(new_arr + i, val);
-			for (size_type i = 0; i < len; i++)
-				A.destroy(arr + i);
-			A.deallocate(arr, cap);
+			for (i = len; i < n; i++)
+				A.construct(new_arr + i);
+			for (i = len; i > 0; i--)
+				A.construct(new_arr + i - 1, arr[i - 1]);
+			for (i = len; i > 0; i--)
+				A.destroy(arr + i - 1);
+			A.deallocate(arr, old_cap);
 			arr = new_arr;
-		} else
-			return;
-		len = n;
-	};    //	Change size (public member function )
-	size_type
-	capacity() const { return cap; };                                //	Return size of allocated storage capacity (public member function )
-	bool empty() const {
-		return len == 0;
-	};                                //	Test whether vector is empty (public member function )
-	void reserve(size_type n) {
-		if (n > cap)
-			cap = n;
+		}
 		else
 			return;
+		len = n;
+	}
+
+	void		resize(size_type n, value_type const &val) {
+		size_type i;
+
+		if (n < len) {
+			for (i = len; i > n; i--)
+				A.destroy(arr + i - 1);
+		}
+		else if (n > len) {
+			size_type old_cap = cap;
+			if (n > cap)
+				cap = n > cap * 2 ? n : cap * 2;
+			pointer new_arr = A.allocate(cap);
+			for (i = len; i < n; i++)
+				A.construct(new_arr + i, val);
+			for (i = len; i > 0; i--)
+				A.construct(new_arr + i - 1, arr[i - 1]);
+			for (i = len; i > 0; i--)
+				A.destroy(arr + i - 1);
+			A.deallocate(arr, old_cap);
+			arr = new_arr;
+		}
+		else
+			return;
+		len = n;
+	}
+
+	/*	Return size of allocated storage capacity	*/
+	size_type	capacity() const { return cap; }
+
+	/*	Test whether vector is empty	*/
+	bool		empty() const { return len == 0; }
+
+	/*	Request a change in capacity	*/
+	void		reserve(size_type n) {
+		if (n < cap)
+			return;
+		size_type old_cap = cap, i;
+		cap = n;
 		pointer new_arr = A.allocate(cap);
-		for (size_type i = 0; i < len; i++)
-			A.construct(new_arr + i, arr[i]);
-		for (size_type i = 0; i < len; i++)
-			A.destroy(arr + i);
-		A.deallocate(arr, cap);
+		for (i = len; i > 0; i--)
+			A.construct(new_arr + i - 1, arr[i - 1]);
+		for (i = len; i > 0; i--)
+			A.destroy(arr + i - 1);
+		A.deallocate(arr, old_cap);
 		arr = new_arr;
-	};                                        //	Request a change in capacity (public member function )
+	}
 
-	/* Element access */
+	///*	Element access	*/
 
-	reference operator[](size_type n) { return arr[n]; };
+	/*	Access element	*/
+	reference		operator[](size_type n) { return arr[n]; }
 
-	const_reference operator[](size_type n) const { return arr[n]; };        //	Access element (public member function )
+	const_reference	operator[](size_type n) const { return arr[n]; }
 
-	reference at(size_type n) {
-		if (n >= len)
-			throw std::out_of_range("vector");
-		return arr[n];
-	};
+	/*	Access element	*/
+	reference		at(size_type n) { return n >= len ? throw std::out_of_range("vector") : arr[n]; }
 
-	const_reference at(size_type n) const {
-		if (n >= len)
-			throw std::out_of_range("vector");
-		return arr[n];
-	};                            //	Access element (public member function )
+	const_reference	at(size_type n) const { return n >= len ? throw std::out_of_range("vector") : arr[n]; }
 
-	reference front() { return arr[0]; };
+	/*	Access first element	*/
+	reference		front() { return arr[0]; }
 
-	const_reference
-	front() const { return arr[0]; };                        //	Access first element (public member function )
+	const_reference	front() const { return arr[0]; }
 
-	reference back() { return arr[len - 1]; };
+	/*	Access last element	*/
+	reference		back() { return arr[len - 1]; }
 
-	const_reference back() const {
-		return arr[len - 1];
-	};                    //	Access last element (public member function )
+	const_reference	back() const { return arr[len - 1]; }
 
-	/* Modifiers */
+	///*	Modifiers	*/
 
+	/*	Assign vector content	*/
 	template<class InputIterator>
 	void assign(InputIterator first, InputIterator last) {
-		size_type n = 0;
-		for (; first + n != last; n++);
-		cap = n > cap ? n : cap;
-		for (size_type i = 0; i < len; i++)
-			A.destroy(arr + i);
-		A.deallocate(arr, cap);
-		len = cap;
-		arr = A.allocate(cap);
-		for (size_type i = 0; first + i != last; i++)
-			A.construct(arr + i, *(first + i));
-	};
+		size_type n = last - first, i;
+
+		if (cap >= n) {
+			for (i = 0; i < n; i++)
+				arr[i] = *(first + i);
+			for (i = len; i > n; i--)
+				A.destroy(arr + i - 1);
+		}
+		else {
+			size_type old_cap = cap;
+			cap = n;
+			pointer new_arr = A.allocate(cap);
+
+			for (i = len; i > 0; i--)
+				A.destroy(arr + i - 1);
+			for (i = 0; i < n; i++)
+				A.construct(new_arr + i, *(first + i));
+			A.deallocate(arr, old_cap);
+			arr = new_arr;
+		}
+		len = n;
+	}
 
 	void assign(size_type n, const value_type &val) {
-		cap = n > cap ? n : cap;
-		for (size_type i = 0; i < len; i++)
-			A.destroy(arr + i);
-		A.deallocate(arr, cap);
-		len = cap;
-		arr = A.allocate(cap);
-		for (size_type i = 0; i < len; i++)
-			A.construct(arr + i, val);
-	};                    //	Assign vector content (public member function )
+		size_type i;
+		if (cap >= n) {
+			for (i = 0; i < n; i++)
+				arr[i] = val;
+			for (i = len; i > n; i--)
+				A.destroy(arr + i - 1);
+		}
+		else {
+			size_type old_cap = cap;
+			cap = n;
+			pointer new_arr = A.allocate(cap);
 
+			for (i = len; i > 0; i--)
+				A.destroy(arr + i - 1);
+			for (i = 0; i < n; i++)
+				A.construct(new_arr + i, val);
+			A.deallocate(arr, old_cap);
+			arr = new_arr;
+		}
+		len = n;
+	}
+
+	/*	Add element at the end	*/
 	void push_back(const value_type &val) {
 		if (cap == 0) {
 			A.deallocate(arr, cap);
 			cap = 1;
 			arr = A.allocate(cap);
+			A.construct(arr + len, val);
 		}
-		if (cap == len) {
-			pointer new_arr;
-			size_type old_cap = cap;
-
+		else if (cap == len) {
+			size_type old_cap = cap, i;
 			cap *= 2;
-			new_arr = A.allocate(cap);
-			for (size_type i = 0; i < len; i++)
-				A.construct(new_arr + i, arr[i]);
-			A.construct(&new_arr[len], val);
-			for (size_type i = 0; i < len; i++)
-				A.destroy(arr + i);
+			pointer new_arr = A.allocate(cap);
+			A.construct(new_arr + len, val);
+			for (i = len; i > 0; i--)
+				A.construct(new_arr + i - 1, arr[i - 1]);
+			for (i = len; i > 0; i--)
+				A.destroy(arr + i - 1);
 			A.deallocate(arr, old_cap);
 			arr = new_arr;
-		} else
-			A.construct(&arr[len], val);
-		len += 1;
-	};                            //	Add element at the end (public member function )
-	void pop_back() {
-		A.destroy(arr + (len - 1));
-		len -= 1;
-	};                                                    //	Delete last element (public member function )
+		}
+		else
+			A.construct(arr + len, val);
+		len++;
+	}
 
+	/*	Delete last element	*/
+	void pop_back() { A.destroy(arr + len - 1); len--; }
+
+	/*	Insert elements	*/
 	iterator insert(iterator position, const value_type &val) {
-		typename iterator::difference_type t = position - begin();
+		size_type t = position - begin();
 
 		if (cap == 0) {
 			A.deallocate(arr, cap);
 			cap = 1;
 			arr = A.allocate(cap);
 			A.construct(arr + t, val);
-		} else if (cap == len) {
-			size_type old_cap = cap;
-			size_type i;
-
+		}
+		else if (cap == len) {
+			size_type old_cap = cap, i;
 			cap *= 2;
 			pointer new_arr = A.allocate(cap);
-
 			A.construct(new_arr + t, val);
 			for (i = t; i > 0; i--)
 				A.construct(new_arr + i - 1, arr[i - 1]);
@@ -201,7 +256,8 @@ public:
 				A.destroy(arr + i - 1);
 			A.deallocate(arr, old_cap);
 			arr = new_arr;
-		} else if (t == len)
+		}
+		else if (t == len)
 			A.construct(arr + len, val);
 		else {
 			size_type i = len - 1;
@@ -213,10 +269,10 @@ public:
 		}
 		len++;
 		return arr + t;
-	}; // single element (1)
+	}					// single element
 
 	void insert(iterator position, size_type n, const value_type &val) {
-		typename iterator::difference_type t = position - begin();
+		size_type t = position - begin();
 
 		if (cap == 0) {
 			A.deallocate(arr, cap);
@@ -224,14 +280,11 @@ public:
 			arr = A.allocate(cap);
 			for (size_type i = 0; i < n; i++)
 				A.construct(arr + t + i, val);
-		} else if (cap == len || len + n > cap) {
-			size_type old_cap = cap;
+		}
+		else if (cap == len || len + n > cap) {
+			size_type old_cap = cap, i, k = t + n;
 			cap = len + n > cap * 2 ? len + n : cap * 2;
 			pointer new_arr = A.allocate(cap);
-
-			size_type i;
-			size_type k = t + n;
-
 			for (i = t; i < k; i++)
 				A.construct(new_arr + i, val);
 			for (i = t; i > 0; i--)
@@ -242,7 +295,8 @@ public:
 				A.destroy(arr + i - 1);
 			A.deallocate(arr, old_cap);
 			arr = new_arr;
-		} else if (t == len)
+		}
+		else if (t == len)
 			for (size_type i = 0; i < n; i++)
 				A.construct(arr + len + i, val);
 		else {
@@ -256,14 +310,11 @@ public:
 				arr[i + k - 1] = val;
 		}
 		len += n;
-	};// fill (2)
+	}		// fill
 
 	template<class InputIterator>
 	void insert(iterator position, InputIterator first, InputIterator last) {
-		typename iterator::difference_type t = position - begin();
-		size_type n = 0;
-
-		for (; first + n != last; n++);
+		size_type t = position - begin(), n = last - first;
 
 		if (cap == 0) {
 			A.deallocate(arr, cap);
@@ -271,14 +322,11 @@ public:
 			arr = A.allocate(cap);
 			for (size_type i = 0; i < n; i++)
 				A.construct(arr + t + i, first[i]);
-		} else if (cap == len || len + n > cap) {
-			size_type old_cap = cap;
+		}
+		else if (cap == len || len + n > cap) {
+			size_type old_cap = cap, i, ii = 0, k = t + n;
 			cap = len + n > cap * 2 ? len + n : cap * 2;
 			pointer new_arr = A.allocate(cap);
-
-			size_type i;
-			size_type ii = 0;
-			size_type k = t + n;
 
 			for (i = t; i < k; i++, ii++)
 				A.construct(new_arr + i, first[ii]);
@@ -290,7 +338,8 @@ public:
 				A.destroy(arr + i - 1);
 			A.deallocate(arr, old_cap);
 			arr = new_arr;
-		} else if (t == len)
+		}
+		else if (t == len)
 			for (size_type i = 0; i < n; i++)
 				A.construct(arr + len + i, first[i]);
 		else {
@@ -305,20 +354,19 @@ public:
 				arr[i + k - 1] = first[ii];
 		}
 		len += n;
-	};// Insert elements (public member function ) range (3)
+	}	// range
 
+	/*	Erase elements	*/
 	iterator erase(iterator position) {
 		for (size_type t = position - begin(); t < len - 1; t++)
 			arr[t] = arr[t + 1];
 		A.destroy(arr + len - 1);
 		len--;
 		return position;
-	};
+	}
 
 	iterator erase(iterator first, iterator last) {
-		size_type i = last - first;
-		size_type t = last - begin() - 1;
-		size_type k = first - begin();
+		size_type i = last - first, t = last - begin() - 1, k = first - begin();
 
 		for (; t < len - 1; t++, k++)
 			arr[k] = arr[t + 1];
@@ -326,8 +374,9 @@ public:
 			A.destroy(arr + len - 1 - d);
 		len -= i;
 		return last;
-	}; //Erase elements (public member function )
+	}
 
+	/*	Swap content	*/
 	void swap(vector &x) {
 		pointer tmp_arr = arr;
 
@@ -343,47 +392,58 @@ public:
 
 		cap = x.cap;
 		x.cap = tmp_cap;
-	};                                                //	Swap content (public member function )
+	}
+
+	/*	Clear content	*/
 	void clear() {
 		for (size_type i = len; i > 0; i--)
 			A.destroy(arr + i - 1);
 		len = 0;
-	};                                                        //	Clear content (public member function )
+	}
 
-	/* Allocator */
+	///*	Allocator	*/
 
-	allocator_type
-	get_allocator() const { return A; };                                //	Get allocator (public member function )
+	/*	Get allocator	*/
+	allocator_type get_allocator() const { return A; }
 
-	/* Constructors */
+	///*	Constructors	*/
 
-	explicit vector(const allocator_type &alloc = allocator_type()) : A(alloc), len(0), cap(0) {
-		arr = A.allocate(0);
-	};
+	/*	Default constructor	*/
+	explicit vector(const allocator_type &alloc = allocator_type()) : A(alloc), len(0), cap(0) { arr = A.allocate(0); }
 
-	explicit vector(size_type n, const value_type &val = value_type(), const allocator_type &alloc = allocator_type())
-			: A(alloc), len(n), cap(n) {
+	/*	Size fill constructor	*/
+	explicit vector(size_type n, const value_type &val, const allocator_type &alloc = allocator_type()) : A(alloc), len(n), cap(n) {
 		arr = A.allocate(cap);
 		for (size_type i = 0; i < len; i++)
 			A.construct(arr + i, val);
-	};
+	}
 
-	template<class InputIterator>
-	vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type()) : A(alloc), len(0),
-																									  cap(0) {
-		for (; first + len != last; ++cap, ++len);
+	/*	Size constructor	*/
+	explicit vector(size_type n, const allocator_type &alloc = allocator_type()) : A(alloc), len(n), cap(n) {
 		arr = A.allocate(cap);
-		for (size_type i = 0; first + i != last; ++i)
-			A.construct(&arr[i], *(first + i));
-	};
+		for (size_type i = 0; i < len; i++)
+			A.construct(arr + i);
+	}
 
+	/*	Iterator constructor	*/
+	template<class InputIterator>
+	vector(InputIterator first, InputIterator last, const allocator_type &alloc = allocator_type()) : A(alloc) {
+		size_type n = last - first, i;
+		cap = n;
+		len = n;
+		arr = A.allocate(cap);
+		for (i = 0; first + i != last; ++i)
+			A.construct(arr + i, *(first + i));
+	}
+
+	/*	Copy constructor	*/
 	vector(const vector &x) : A(x.A), len(x.len), cap(x.cap) {
 		arr = A.allocate(cap);
 		for (size_type i = 0; i < len; i++)
 			A.construct(&arr[i], x.arr[i]);
-	};
+	}
 
-	/* Destructor */
+	///*	Destructor	*/
 
 	~vector() {
 		for (size_type i = len; i > 0; i--)
@@ -391,13 +451,37 @@ public:
 		A.deallocate(arr, cap);
 	}
 
-	/* Non-member function overloads */
+	///*	Assign overload	*/
+
+	vector &operator=(const vector &other) {
+		if (this == &other)
+			return *this;
+		if (len >= other.len) {
+			for (size_type i = 0; i < other.len; i++)
+				arr[i] = other.arr[i];
+			for (size_type i = len; i > other.len; i--)
+				A.destroy(arr + i - 1);
+			len = other.len;
+		}
+		else {
+			for (size_type i = len; i > 0; i--)
+				A.destroy(arr + i - 1);
+			A.deallocate(arr, cap);
+			cap = other.cap;
+			len = other.len;
+			arr = A.allocate(cap);
+			for (size_type i = 0; i < len; i++)
+				A.construct(arr + i, other.arr[i]);
+		}
+		return *this;
+	}
+
+	///*	Non-member function overloads	*/
 
 	template<class V, class alloc>
-	friend void swap(vector<V, alloc> &x, vector<V, alloc> &y) { x.swap(y); };
+	friend void swap(vector<V, alloc> &x, vector<V, alloc> &y) { x.swap(y); }
 
-	/* relational operators */
-
+	/*	Relational operators	*/
 	friend bool operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
 		if (lhs.len == rhs.len) {
 			for (size_type i = 0; i < lhs.len; i++) {
@@ -427,9 +511,7 @@ public:
 
 	friend bool operator>(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) { return rhs < lhs; }
 
-	friend bool operator>=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
-		return !(lhs < rhs);
-	} // Relational operators for vector (function template )
+	friend bool operator>=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) { return !(lhs < rhs); }
 };
 
 }
