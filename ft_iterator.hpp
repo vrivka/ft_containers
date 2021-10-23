@@ -1,18 +1,18 @@
 #ifndef FT_ITERATOR_HPP
 #define FT_ITERATOR_HPP
 
-#include <iterator>
+#include "iterator_traits.hpp"
 
 namespace ft {
 template<class V, class Category = std::random_access_iterator_tag>
-class iterator : public std::iterator<Category, V> {
+class iterator {
 public:
 	typedef V													iterator_type;		//	Iterator's type
-	typedef typename std::iterator_traits<V>::iterator_category	iterator_category;	//	Preserves Iterator's category
-	typedef typename std::iterator_traits<V>::value_type		value_type;			//	Preserves Iterator's value type
-	typedef typename std::iterator_traits<V>::difference_type	difference_type;	//	Preserves Iterator's difference type
-	typedef typename std::iterator_traits<V>::pointer			pointer;			//	Preserves Iterator's pointer type
-	typedef typename std::iterator_traits<V>::reference			reference;			//	Preserves Iterator's reference type
+	typedef typename ft::iterator_traits<V>::iterator_category	iterator_category;	//	Preserves Iterator's category
+	typedef typename ft::iterator_traits<V>::value_type			value_type;			//	Preserves Iterator's value type
+	typedef typename ft::iterator_traits<V>::difference_type	difference_type;	//	Preserves Iterator's difference type
+	typedef typename ft::iterator_traits<V>::pointer			pointer;			//	Preserves Iterator's pointer type
+	typedef typename ft::iterator_traits<V>::reference			reference;			//	Preserves Iterator's reference type
 private:
 	iterator_type iter;
 public:
