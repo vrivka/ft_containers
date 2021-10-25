@@ -1,7 +1,9 @@
 #include <iostream>
 #include "ft_vector.hpp"
+#include "ft_stack.hpp"
 #include <iomanip>
 #include <vector>
+#include <stack>
 #include <algorithm>
 
 class A {
@@ -45,24 +47,22 @@ int gen() {
 	return ge++;
 }
 
-#include <deque>
-#include <stack>
-#include <queue>
-#include <memory>
-
 int main() {
-	ft::vector<A> a(5);
-	std::cout << "\n";
-	ft::vector<A> b(9);
-	std::cout << "\n";
-	std::generate(a.begin(), a.end(), gen);
-	std::cout << "\n";
-	std::generate(b.begin(), b.end(), gen);
+	A b(4);
+	std::stack<A, ft::vector<A> > a;
 	std::cout << "\n";
 
-	a = b;
-
+	std::allocator<int>::
+	a.push(b);
 	std::cout << "\n";
-	std::cout << std::setiosflags(std::ios::boolalpha) << a.empty() << "\nsize: " << a.size() << "\ncap: " << a.capacity() << std::endl;
+	a.push(b);
+	std::cout << "\n";
+	a.push(b);
+	std::cout << "\n";
+	a.push(b);
+	std::cout << "\n";
+	a.push(b);
+	std::cout << "\n";
+	std::stack<A, ft::vector<A> > c(a);
 	std::cout << "\n";
 }
