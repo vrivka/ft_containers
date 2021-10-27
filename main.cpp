@@ -5,7 +5,9 @@
 #include <vector>
 #include <stack>
 #include <algorithm>
-
+#include <map>
+//#include "ft_map.hpp"
+#include "RBNode.hpp"
 class A {
 public:
 	int i;
@@ -23,6 +25,10 @@ public:
 	bool operator<=(const A &other) const { std::cout << other.i << " less-equal operator\n"; return i <= other.i; }
 	bool operator>(const A &other) const { std::cout << other.i << " more operator\n"; return i > other.i; }
 	bool operator>=(const A &other) const { std::cout << other.i << " more-equal operator\n"; return i >= other.i; }
+	friend std::ostream &operator<<(std::ostream &out, A const &c) {
+		out << c.i;
+		return out;
+	}
 };
 
 void func1(A &i) {
@@ -48,21 +54,17 @@ int gen() {
 }
 
 int main() {
-	A b(4);
-	std::stack<A, ft::vector<A> > a;
-	std::cout << "\n";
+	std::allocator<RBNode<int> > A;
+	RBNode<int> *b = A.allocate(1);
+	A.construct(b, 5);
+	b->color = BLACK;
 
-	std::allocator<int>::
-	a.push(b);
-	std::cout << "\n";
-	a.push(b);
-	std::cout << "\n";
-	a.push(b);
-	std::cout << "\n";
-	a.push(b);
-	std::cout << "\n";
-	a.push(b);
-	std::cout << "\n";
-	std::stack<A, ft::vector<A> > c(a);
-	std::cout << "\n";
+	std::cout << b->val << std::endl;
+	RBNode<int>::add(b, 1);
+	RBNode<int>::add(b, 15);
+	RBNode<int>::add(b, 28);
+	RBNode<int>::add(b, 12);
+	RBNode<int>::add(b, 44);
+	RBNode<int>::add(b, 0);
+	RBNode<int>::print(b);
 }
