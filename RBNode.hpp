@@ -4,23 +4,28 @@
 #include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include "ft_pair.hpp"
 
 enum { RED, BLACK };
 
-template<class T, class Compare = std::less<T> >
+template<class Key, class T, class Compare, class Alloc>
 class RBNode {
 public:
-	typedef T value_type;
+	typedef ft::pair<Key,T> value_type;
 	typedef Compare key_compare;
+	typedef Alloc allocator_type;
+	typedef typename allocator_type::template rebind<RBNode>::other node_allocator_type;
 
-	static std::allocator<RBNode<T> > A = std::allocator<RBNode<T> >();
-	value_type val;
+	allocator_type &A;
+	node_allocator_type &An;
+	key_compare &comp;
+	value_type *val;
 	int16_t color;
 	RBNode *parent;
 	RBNode *left;
 	RBNode *right;
 
-	static RBNode *min(RBNode *node) {
+	RBNode *min(RBNode *node) {
 		if (not node)
 			return NULL;
 		while (node->left)
@@ -28,7 +33,7 @@ public:
 		return node;
 	}
 
-	static RBNode *max(RBNode *node) {
+	RBNode *max(RBNode *node) {
 		if (not node)
 			return NULL;
 		while (node->right)
@@ -36,21 +41,23 @@ public:
 		return node;
 	}
 
-	static void print(RBNode *node) {
+//	RBNode *
+
+	void print(RBNode *node) {
 		if (not node)
 			return ;
 		RBNode::print(node->left);
-		std::cout << "value: " << node->val << " color: " << (node->color ? "BLACK " : "RED   ")
+		std::cout << "value: " << node->val->second << " color: " << (node->color ? "BLACK " : "RED   ")
 		<< "address: " << std::setw(14) << node << " parent: " << std::setw(14) << node->parent
 		<< "\tleft: " << std::setw(14) << node->left << "\tright: " << std::setw(14) << node->right << std::endl;
 		RBNode::print(node->right);
 	}
 
-	static RBNode *find(RBNode *node, value_type v, key_compare &comp = key_compare()) {
+	RBNode *find(RBNode *node, value_type v) {
 		while (node) {
-			if (v == node->val)
+			if (v.first == *node->val->first)
 				return node;
-			else if (comp(v, node->val))
+			else if (comp(v.first, node->val->first))
 				node = node->left;
 			else
 				node = node->right;
@@ -59,25 +66,25 @@ public:
 	}
 
 
-	static RBNode *grandparent(RBNode *node)  {
+	RBNode *grandparent(RBNode *node)  {
 		if (node and node->parent)
 			return node->parent->parent;
 		else
 			return NULL;
 	}
 
-	static RBNode *uncle(RBNode *node) {
-		RBNode *grandparent = RBNode::grandparent(node);
+	RBNode *uncle(RBNode *node) {
+		RBNode *grandparent_ = grandparent(node);
 
-		if (not grandparent)
+		if (not grandparent_)
 			return NULL;
-		else if (grandparent->left == node->parent)
-			return grandparent->right;
+		else if (grandparent_->left == node->parent)
+			return grandparent_->right;
 		else
-			return grandparent->left;
+			return grandparent_->left;
 	}
 
-	static void rotate_left(RBNode *node) {
+	void rotate_left(RBNode *node) {
 		if (not node) return ;
 		RBNode *pivot = node->right;
 
@@ -96,7 +103,7 @@ public:
 		pivot->left = node;
 	}
 
-	static void rotate_right(RBNode *node) {
+	void rotate_right(RBNode *node) {
 		if (not node) return ;
 		RBNode *pivot = node->left;
 
@@ -115,66 +122,70 @@ public:
 		pivot->right = node;
 	}
 
-	static void add(RBNode *node, value_type v, const key_compare &comp = key_compare()) {
+	RBNode *add(RBNode *node, value_type v) {
 		while (node) {
-			if (comp(v, node->val)) {
+			if (comp(v.first, node->val->first) && v.first != node->val->first) {
 				if (node->left)
 					node = node->left;
 				else {
-					node->left = A.allocate(1);
-					A.construct(node->left, v);
+					node->left = An.allocate(1);
+					An.construct(node->left, RBNode(v, A, An, comp));
 					node->left->parent = node;
 					node = node->left;
+					balance(node);
 					break;
 				}
 			}
-			else if (!comp(v, node->val)) {
+			else if (!comp(v.first, node->val->first) && v.first != node->val->first) {
 				if (node->right)
 					node = node->right;
 				else {
-					node->right = A.allocate(1);
-					A.construct(node->right, v);
+					node->right = An.allocate(1);
+					An.construct(node->right, RBNode(v, A, An, comp));
 					node->right->parent = node;
 					node = node->right;
+					balance(node);
 					break;
 				}
 			}
-			else return;
+			else break ;
 		}
-		RBNode::balance(node);
+		while (node->parent)
+			node = node->parent;
+		return node;
 	}
 
-	static void balance(RBNode *node) {
-		RBNode *uncle, *grandparent;
+	void balance(RBNode *node) {
+		RBNode *uncle_, *grandparent_;
 
 		if (not node->parent)
 			node->color = BLACK;
 		else if (node->parent->color == BLACK)
 			return;
-		else if ((uncle = RBNode::uncle(node)) && uncle->color == RED) {
+		else if ((uncle_ = uncle(node)) && uncle_->color == RED) {
 			node->parent->color = BLACK;
-			uncle->color = BLACK;
-			grandparent = RBNode::grandparent(node);
-			grandparent->color = RED;
-			RBNode::balance(grandparent);
+			uncle_->color = BLACK;
+			grandparent_ = grandparent(node);
+			grandparent_->color = RED;
+			balance(grandparent_);
 		}
 		else {
-			grandparent = RBNode::grandparent(node);
-			if (node == node->parent->right and node->parent == grandparent->left) {
-				RBNode::rotate_left(node->parent);
+			grandparent_ = grandparent(node);
+			if (node == node->parent->right and node->parent == grandparent_->left) {
+				rotate_left(node->parent);
 				node = node->left;
 			}
-			else if (node == node->parent->left and node->parent == grandparent->right) {
-				RBNode::rotate_right(node->parent);
+			else if (node == node->parent->left and node->parent == grandparent_->right) {
+				rotate_right(node->parent);
 				node = node->right;
 			}
-			grandparent = RBNode::grandparent(node);
+			grandparent_ = grandparent(node);
 			node->parent->color = BLACK;
-			grandparent->color = RED;
-			if (node == node->parent->left and node->parent == grandparent->left)
-				rotate_right(grandparent);
+			grandparent_->color = RED;
+			if (node == node->parent->left and node->parent == grandparent_->left)
+				rotate_right(grandparent_);
 			else
-				rotate_left(grandparent);
+				rotate_left(grandparent_);
 		}
 	}
 
@@ -184,29 +195,45 @@ public:
 //	}
 
 
-	RBNode() : val(NULL), color(RED), parent(NULL), left(NULL), right(NULL) {}
+	RBNode(const allocator_type &alloc, const node_allocator_type &node_alloc, const key_compare &compare)
+	: A(alloc), An(node_alloc), comp(compare), val(NULL), color(RED), parent(NULL), left(NULL), right(NULL) {}
 
-	explicit RBNode(value_type v) : val(v), color(RED), parent(NULL), left(NULL), right(NULL) {}
+	RBNode(value_type v, allocator_type &alloc, node_allocator_type &node_alloc, key_compare &compare)
+	: A(alloc), An(node_alloc), comp(compare), color(RED), parent(NULL), left(NULL), right(NULL) {
+		val = A.allocate(1);
+		A.construct(val, v);
+	}
 
-	RBNode(const RBNode &other) : val(other.val), color(other.color), parent(NULL), left(NULL), right(NULL) {
+	RBNode(const RBNode &other)
+	: A(other.A), An(other.An), comp(other.comp), color(other.color), parent(NULL), left(NULL), right(NULL) {
+		this->val = A.allocate(1);
+		A.construct(this->val, *other.val);
 		if (other.left) {
-			this->left = new RBNode(*other.left);
+			this->left = An.allocate(1);
+			An.construct(this->left, *other.left);
 			this->left->parent = this;
 		}
 		if (other.right) {
-			this->right = new RBNode(*other.right);
+			this->right = An.allocate(1);
+			An.construct(this->right, *other.left);
 			this->right->parent = this;
 		}
 	}
 
 	~RBNode() {
-		if (left)
-			A.destroy(left);
-		if (right)
-			A.destroy(right);
+		if (right) {
+			An.destroy(right);
+			An.deallocate(right, 1);
+		}
+		A.destroy(val);
+		A.deallocate(val, 1);
+		if (left) {
+			An.destroy(left);
+			An.deallocate(left, 1);
+		}
 	}
 
-	static RBNode *increment(RBNode *node) {
+	RBNode *increment(RBNode *node) {
 		if (not node)
 			return NULL;
 		if (node->right)
@@ -223,7 +250,7 @@ public:
 		return node;
 	}
 
-	static RBNode *decrement(RBNode *node) {
+	RBNode *decrement(RBNode *node) {
 		if (not node)
 			return NULL;
 		if (node->left)

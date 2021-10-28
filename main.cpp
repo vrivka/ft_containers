@@ -53,18 +53,36 @@ int gen() {
 	return ge++;
 }
 
+typedef RBNode<int,A, std::less<int>, std::allocator<ft::pair<int,A> > > NODE;
+
 int main() {
-	std::allocator<RBNode<int> > A;
-	RBNode<int> *b = A.allocate(1);
-	A.construct(b, 5);
+	std::allocator<ft::pair<int,A> > Al;
+	std::allocator<int>::rebind<NODE>::other An;
+	std::less<int> Co;
+	NODE *b = An.allocate(1);
+	An.construct(b, NODE(ft::make_pair(0, A(0)), Al, An, Co));
 	b->color = BLACK;
 
-	std::cout << b->val << std::endl;
-	RBNode<int>::add(b, 1);
-	RBNode<int>::add(b, 15);
-	RBNode<int>::add(b, 28);
-	RBNode<int>::add(b, 12);
-	RBNode<int>::add(b, 44);
-	RBNode<int>::add(b, 0);
-	RBNode<int>::print(b);
+//	std::cout << b->val->first << std::endl;
+//	std::cout << b->val->second << std::endl;
+	b = b->add(b, ft::make_pair(0, A(1)));
+//	b = b->add(b, ft::make_pair(0, A(12)));
+//	b->add(b, ft::make_pair(2, 16));
+//	b->add(b, ft::make_pair(2, 16));
+//	b->add(b, ft::make_pair(2, 16));
+//	b->add(b, ft::make_pair(2, 16));
+//	b->add(b, ft::make_pair(2, 16));
+//	b->add(b, 15);
+//	b->add(b, 28);
+//	b->add(b, 12);
+//	b->add(b, 44);
+//	b->add(b, 0);
+	b->print(b);
+
+	An.destroy(b);
+	An.deallocate(b, 1);
+	std::map<int, A> a;
+
+	a.insert(std::make_pair(0, A(0)));
+	a.insert(std::make_pair(0, A(1)));
 }

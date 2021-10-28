@@ -28,7 +28,7 @@ public:
 	}
 	friend bool operator!=(const pair &lhs, const pair &rhs) { return !(lhs == rhs); }
 	friend bool operator<(const pair &lhs, const pair &rhs) {
-		if (lhs.first < rhs.right)
+		if (lhs.first < rhs.first)
 			return true;
 		if (!(rhs.first < lhs.first))
 			if (lhs.second < rhs.second)
