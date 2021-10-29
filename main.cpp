@@ -8,6 +8,9 @@
 #include <map>
 //#include "ft_map.hpp"
 #include "RBNode.hpp"
+#include "RBT.hpp"
+
+
 class A {
 public:
 	int i;
@@ -53,20 +56,22 @@ int gen() {
 	return ge++;
 }
 
-typedef RBNode<int,A, std::less<int>, std::allocator<ft::pair<int,A> > > NODE;
+typedef RBNode<int,A, std::greater<int>, std::allocator<ft::pair<int,A> > > NODE;
+
+#include <memory>
 
 int main() {
-	std::allocator<ft::pair<int,A> > Al;
-	std::allocator<int>::rebind<NODE>::other An;
-	std::less<int> Co;
-	NODE *b = An.allocate(1);
-	An.construct(b, NODE(ft::make_pair(0, A(0)), Al, An, Co));
-	b->color = BLACK;
+//	std::allocator<ft::pair<int,A> > Al;
+//	std::allocator<int>::rebind<NODE>::other An;
+//	std::greater<int> Co;
+//	NODE *b = An.allocate(1);
+//	An.construct(b, NODE(ft::make_pair<int,A>(0, 0), Al, An, Co));
+//	b->color = BLACK;
 
 //	std::cout << b->val->first << std::endl;
 //	std::cout << b->val->second << std::endl;
-	b = b->add(b, ft::make_pair(0, A(1)));
-//	b = b->add(b, ft::make_pair(0, A(12)));
+//	b = b->add(b, ft::make_pair<int,A>(1, 1));
+//	b = b->add(b, ft::make_pair<int,A>(2, 12));
 //	b->add(b, ft::make_pair(2, 16));
 //	b->add(b, ft::make_pair(2, 16));
 //	b->add(b, ft::make_pair(2, 16));
@@ -77,12 +82,28 @@ int main() {
 //	b->add(b, 12);
 //	b->add(b, 44);
 //	b->add(b, 0);
-	b->print(b);
+//	b->print(b);
 
-	An.destroy(b);
-	An.deallocate(b, 1);
-	std::map<int, A> a;
-
-	a.insert(std::make_pair(0, A(0)));
-	a.insert(std::make_pair(0, A(1)));
+//	An.destroy(b);
+//	An.deallocate(b, 1);
+//	std::allocator<ft::pair<int,A> > a;
+//	std::less<int> c;
+//	ft::pair<int,A> pt[3] = {ft::make_pair<int,A>(0, 10), ft::make_pair<int,A>(0, 11), ft::make_pair<int,A>(0, 12)};
+//	std::pair<int,A> pm[3] = {std::make_pair(0, 20), std::make_pair<int,A>(0, 21), std::make_pair<int,A>(0, 22)};
+//	std::cout << "\n";
+//	RBT<int,A,std::less<int>,std::allocator<ft::pair<int,A> > > t(&a, &c);
+//
+//	t.insert(pt[0]);
+//	t.insert(pt[1]);
+//	t.insert(pt[2]);
+//
+//
+//	std::cout << "\n";
+//	std::map<int, A, std::less<int> > m;
+//
+//	m.insert(pm[0]);
+//	m.insert(pm[1]);
+//	m.insert(pm[2]);
+//	a.inse
+	std::vector<A> a(10);
 }

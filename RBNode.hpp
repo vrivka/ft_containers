@@ -16,9 +16,9 @@ public:
 	typedef Alloc allocator_type;
 	typedef typename allocator_type::template rebind<RBNode>::other node_allocator_type;
 
-	allocator_type &A;
-	node_allocator_type &An;
-	key_compare &comp;
+	allocator_type *A;
+	node_allocator_type *An;
+	key_compare *comp;
 	value_type *val;
 	int16_t color;
 	RBNode *parent;
@@ -53,7 +53,7 @@ public:
 		RBNode::print(node->right);
 	}
 
-	RBNode *find(RBNode *node, value_type v) {
+	RBNode *find(RBNode *node, value_type &v) {
 		while (node) {
 			if (v.first == *node->val->first)
 				return node;
@@ -122,37 +122,44 @@ public:
 		pivot->right = node;
 	}
 
-	RBNode *add(RBNode *node, value_type v) {
+	void add(RBNode *node, const value_type &v) {
 		while (node) {
-			if (comp(v.first, node->val->first) && v.first != node->val->first) {
+			if ((*comp)(v.first, node->val->first) && v.first != node->val->first) {
 				if (node->left)
 					node = node->left;
 				else {
-					node->left = An.allocate(1);
-					An.construct(node->left, RBNode(v, A, An, comp));
+					node->left = An->allocate(1);
+					An->construct(node->left);
+					node->left->A = A;
+					node->left->An = An;
+					node->left->comp = comp;
 					node->left->parent = node;
 					node = node->left;
+					node->val = A->allocate(1);
+					A->construct(node->val, v);
 					balance(node);
-					break;
+					return ;
 				}
 			}
-			else if (!comp(v.first, node->val->first) && v.first != node->val->first) {
+			else if (!(*comp)(v.first, node->val->first) && v.first != node->val->first) {
 				if (node->right)
 					node = node->right;
 				else {
-					node->right = An.allocate(1);
-					An.construct(node->right, RBNode(v, A, An, comp));
+					node->right = An->allocate(1);
+					An->construct(node->right);
+					node->right->A = A;
+					node->right->An = An;
+					node->right->comp = comp;
 					node->right->parent = node;
 					node = node->right;
+					node->val = A->allocate(1);
+					A->construct(node->val, v);
 					balance(node);
-					break;
+					return ;
 				}
 			}
-			else break ;
+			else return ;
 		}
-		while (node->parent)
-			node = node->parent;
-		return node;
 	}
 
 	void balance(RBNode *node) {
@@ -195,41 +202,35 @@ public:
 //	}
 
 
-	RBNode(const allocator_type &alloc, const node_allocator_type &node_alloc, const key_compare &compare)
+	RBNode(allocator_type *alloc = NULL, node_allocator_type *node_alloc = NULL, key_compare *compare = NULL)
 	: A(alloc), An(node_alloc), comp(compare), val(NULL), color(RED), parent(NULL), left(NULL), right(NULL) {}
-
-	RBNode(value_type v, allocator_type &alloc, node_allocator_type &node_alloc, key_compare &compare)
-	: A(alloc), An(node_alloc), comp(compare), color(RED), parent(NULL), left(NULL), right(NULL) {
-		val = A.allocate(1);
-		A.construct(val, v);
-	}
 
 	RBNode(const RBNode &other)
 	: A(other.A), An(other.An), comp(other.comp), color(other.color), parent(NULL), left(NULL), right(NULL) {
-		this->val = A.allocate(1);
-		A.construct(this->val, *other.val);
+		this->val = A->allocate(1);
+		A->construct(this->val, *other.val);
 		if (other.left) {
-			this->left = An.allocate(1);
-			An.construct(this->left, *other.left);
+			this->left = An->allocate(1);
+			An->construct(this->left, *other.left);
 			this->left->parent = this;
 		}
 		if (other.right) {
-			this->right = An.allocate(1);
-			An.construct(this->right, *other.left);
+			this->right = An->allocate(1);
+			An->construct(this->right, *other.left);
 			this->right->parent = this;
 		}
 	}
 
 	~RBNode() {
 		if (right) {
-			An.destroy(right);
-			An.deallocate(right, 1);
+			An->destroy(right);
+			An->deallocate(right, 1);
 		}
-		A.destroy(val);
-		A.deallocate(val, 1);
+		A->destroy(val);
+		A->deallocate(val, 1);
 		if (left) {
-			An.destroy(left);
-			An.deallocate(left, 1);
+			An->destroy(left);
+			An->deallocate(left, 1);
 		}
 	}
 
