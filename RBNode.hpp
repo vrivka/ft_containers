@@ -8,24 +8,24 @@
 
 enum { RED, BLACK };
 
-template<class Key, class T, class Compare, class Alloc>
+template<class T, class Alloc>
 class RBNode {
 public:
-	typedef ft::pair<Key,T> value_type;
-	typedef Compare key_compare;
+	typedef T value_type;
 	typedef Alloc allocator_type;
 	typedef typename allocator_type::template rebind<RBNode>::other node_allocator_type;
+	typedef typename node_allocator_type::pointer pointer;
+	typedef typename node_allocator_type::reference reference;
 
 	allocator_type *A;
 	node_allocator_type *An;
-	key_compare *comp;
 	value_type *val;
 	int16_t color;
-	RBNode *parent;
-	RBNode *left;
-	RBNode *right;
+	pointer parent;
+	pointer left;
+	pointer right;
 
-	RBNode *min(RBNode *node) {
+	pointer min(pointer node) {
 		if (not node)
 			return NULL;
 		while (node->left)
@@ -33,7 +33,7 @@ public:
 		return node;
 	}
 
-	RBNode *max(RBNode *node) {
+	pointer max(pointer node) {
 		if (not node)
 			return NULL;
 		while (node->right)
@@ -41,9 +41,7 @@ public:
 		return node;
 	}
 
-//	RBNode *
-
-	void print(RBNode *node) {
+	void print(pointer node) {
 		if (not node)
 			return ;
 		RBNode::print(node->left);
@@ -53,28 +51,15 @@ public:
 		RBNode::print(node->right);
 	}
 
-	RBNode *find(RBNode *node, value_type &v) {
-		while (node) {
-			if (v.first == *node->val->first)
-				return node;
-			else if (comp(v.first, node->val->first))
-				node = node->left;
-			else
-				node = node->right;
-		}
-		return NULL;
-	}
-
-
-	RBNode *grandparent(RBNode *node)  {
+	static pointer grandparent(pointer node)  {
 		if (node and node->parent)
 			return node->parent->parent;
 		else
 			return NULL;
 	}
 
-	RBNode *uncle(RBNode *node) {
-		RBNode *grandparent_ = grandparent(node);
+	static pointer uncle(pointer node) {
+		pointer grandparent_ = grandparent(node);
 
 		if (not grandparent_)
 			return NULL;
@@ -84,9 +69,9 @@ public:
 			return grandparent_->left;
 	}
 
-	void rotate_left(RBNode *node) {
+	static void rotate_left(pointer node) {
 		if (not node) return ;
-		RBNode *pivot = node->right;
+		pointer pivot = node->right;
 
 		if (not pivot) return ;
 		pivot->parent = node->parent;
@@ -103,9 +88,9 @@ public:
 		pivot->left = node;
 	}
 
-	void rotate_right(RBNode *node) {
+	static void rotate_right(pointer node) {
 		if (not node) return ;
-		RBNode *pivot = node->left;
+		pointer pivot = node->left;
 
 		if (not pivot) return ;
 		pivot->parent = node->parent;
@@ -122,54 +107,14 @@ public:
 		pivot->right = node;
 	}
 
-	void add(RBNode *node, const value_type &v) {
-		while (node) {
-			if ((*comp)(v.first, node->val->first) && v.first != node->val->first) {
-				if (node->left)
-					node = node->left;
-				else {
-					node->left = An->allocate(1);
-					An->construct(node->left);
-					node->left->A = A;
-					node->left->An = An;
-					node->left->comp = comp;
-					node->left->parent = node;
-					node = node->left;
-					node->val = A->allocate(1);
-					A->construct(node->val, v);
-					balance(node);
-					return ;
-				}
-			}
-			else if (!(*comp)(v.first, node->val->first) && v.first != node->val->first) {
-				if (node->right)
-					node = node->right;
-				else {
-					node->right = An->allocate(1);
-					An->construct(node->right);
-					node->right->A = A;
-					node->right->An = An;
-					node->right->comp = comp;
-					node->right->parent = node;
-					node = node->right;
-					node->val = A->allocate(1);
-					A->construct(node->val, v);
-					balance(node);
-					return ;
-				}
-			}
-			else return ;
-		}
-	}
-
-	void balance(RBNode *node) {
-		RBNode *uncle_, *grandparent_;
+	static void balance(pointer node) {
+		pointer uncle_, grandparent_;
 
 		if (not node->parent)
 			node->color = BLACK;
 		else if (node->parent->color == BLACK)
 			return;
-		else if ((uncle_ = uncle(node)) && uncle_->color == RED) {
+		else if ((uncle_ = uncle(node)) and uncle_->color == RED) {
 			node->parent->color = BLACK;
 			uncle_->color = BLACK;
 			grandparent_ = grandparent(node);
@@ -197,16 +142,11 @@ public:
 	}
 
 
-//	static void erase(RBNode *node) {
-//
-//	}
-
-
-	RBNode(allocator_type *alloc = NULL, node_allocator_type *node_alloc = NULL, key_compare *compare = NULL)
-	: A(alloc), An(node_alloc), comp(compare), val(NULL), color(RED), parent(NULL), left(NULL), right(NULL) {}
+	RBNode()
+	: A(NULL), An(NULL), val(NULL), color(RED), parent(NULL), left(NULL), right(NULL) {}
 
 	RBNode(const RBNode &other)
-	: A(other.A), An(other.An), comp(other.comp), color(other.color), parent(NULL), left(NULL), right(NULL) {
+	: A(other.A), An(other.An), color(other.color), parent(NULL), left(NULL), right(NULL) {
 		this->val = A->allocate(1);
 		A->construct(this->val, *other.val);
 		if (other.left) {
@@ -234,7 +174,7 @@ public:
 		}
 	}
 
-	RBNode *increment(RBNode *node) {
+	pointer increment(pointer node) {
 		if (not node)
 			return NULL;
 		if (node->right)
@@ -251,7 +191,7 @@ public:
 		return node;
 	}
 
-	RBNode *decrement(RBNode *node) {
+	pointer decrement(pointer node) {
 		if (not node)
 			return NULL;
 		if (node->left)
@@ -268,20 +208,30 @@ public:
 		return node;
 	}
 
-	RBNode &operator=( const RBNode &other ) {
+	reference operator=(const reference other) {
 		if (this == &other)
 			return *this;
 		this->val = other.val;
 		this->color = other.color;
 		this->parent = NULL;
-		delete this->left;
-		this->left = NULL;
-		delete this->right;
-		this->right = NULL;
-		if (other.left)
-			this->left = new RBNode(*other.left);
-		if (other.right)
-			this->right = new RBNode(*other.right);
+		if (this->left) {
+			An->destroy(this->left);
+			An->deallocate(this->left, 1);
+			this->left = NULL;
+		}
+		if (this->right) {
+			An->destroy(this->right);
+			An->deallocate(this->right, 1);
+			this->right = NULL;
+		}
+		if (other.left) {
+			this->left = An->allocate(1);
+			An->construct(this->left, *other.left);
+		}
+		if (other.right) {
+			this->right = An->allocate(1);
+			An->construct(this->right, *other.right);
+		}
 		return *this;
 	}
 };

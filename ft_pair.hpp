@@ -7,10 +7,11 @@ class pair {
 public:
 	typedef	T1	first_type;	//	The first template parameter (T1)
 	typedef	T2	second_type;//	The second template parameter (T2)
-	first_type	first;
+	const first_type first;
 	second_type	second;
 	pair() : first(), second() {}
-	pair(const pair &other) : first(other.first), second(other.second) {}
+	template<class U, class V>
+	pair(const pair<U,V> &other) : first(other.first), second(other.second) {}
 	pair(const first_type &first, const second_type &second) : first(first), second(second) {}
 	~pair() {}
 	pair &operator=(const pair &other) {
@@ -41,7 +42,7 @@ public:
 };
 
 template <class T1, class T2>
-pair<T1,T2> make_pair(T1 x, T2 y) { return pair<T1, T2>(x, y); }
+pair<T1,T2> make_pair(T1 x, T2 y) { return pair<T1,T2>(x, y); }
 
 }
 

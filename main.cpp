@@ -8,7 +8,9 @@
 #include <map>
 //#include "ft_map.hpp"
 #include "RBNode.hpp"
-#include "RBT.hpp"
+#include "RBTree.hpp"
+#include <memory>
+#include <utility>
 
 
 class A {
@@ -34,76 +36,23 @@ public:
 	}
 };
 
-void func1(A &i) {
-	std::cout << ' ' << i.i;
-}
-
-//void func1(int &i) {
-//	std::cout << ' ' << i;
-//}
-
-bool func2(int i) {
-	return i == 4 * 4;
-}
-
-bool func3(int i) {
-	return i <= 11;
-}
-
-int ge = 1;
-
-int gen() {
-	return ge++;
-}
-
-typedef RBNode<int,A, std::greater<int>, std::allocator<ft::pair<int,A> > > NODE;
-
-#include <memory>
-
 int main() {
-//	std::allocator<ft::pair<int,A> > Al;
-//	std::allocator<int>::rebind<NODE>::other An;
-//	std::greater<int> Co;
-//	NODE *b = An.allocate(1);
-//	An.construct(b, NODE(ft::make_pair<int,A>(0, 0), Al, An, Co));
-//	b->color = BLACK;
+	std::less<int> l;
+	std::allocator<ft::pair<int,int> > a;
+	RBTree<ft::pair<int,int>, std::less<int>, std::allocator<ft::pair<int,int> > > t(&a, &l);
 
-//	std::cout << b->val->first << std::endl;
-//	std::cout << b->val->second << std::endl;
-//	b = b->add(b, ft::make_pair<int,A>(1, 1));
-//	b = b->add(b, ft::make_pair<int,A>(2, 12));
-//	b->add(b, ft::make_pair(2, 16));
-//	b->add(b, ft::make_pair(2, 16));
-//	b->add(b, ft::make_pair(2, 16));
-//	b->add(b, ft::make_pair(2, 16));
-//	b->add(b, ft::make_pair(2, 16));
-//	b->add(b, 15);
-//	b->add(b, 28);
-//	b->add(b, 12);
-//	b->add(b, 44);
-//	b->add(b, 0);
-//	b->print(b);
+	t.insert(ft::make_pair(1, 2));
+	t.insert(ft::make_pair(2, 2));
+	t.insert(ft::make_pair(3, 2));
+	t.insert(ft::make_pair(4, 2));
+	t.insert(ft::make_pair(5, 2));
+	t.print();
 
-//	An.destroy(b);
-//	An.deallocate(b, 1);
-//	std::allocator<ft::pair<int,A> > a;
-//	std::less<int> c;
-//	ft::pair<int,A> pt[3] = {ft::make_pair<int,A>(0, 10), ft::make_pair<int,A>(0, 11), ft::make_pair<int,A>(0, 12)};
-//	std::pair<int,A> pm[3] = {std::make_pair(0, 20), std::make_pair<int,A>(0, 21), std::make_pair<int,A>(0, 22)};
-//	std::cout << "\n";
-//	RBT<int,A,std::less<int>,std::allocator<ft::pair<int,A> > > t(&a, &c);
-//
-//	t.insert(pt[0]);
-//	t.insert(pt[1]);
-//	t.insert(pt[2]);
-//
-//
-//	std::cout << "\n";
-//	std::map<int, A, std::less<int> > m;
-//
-//	m.insert(pm[0]);
-//	m.insert(pm[1]);
-//	m.insert(pm[2]);
-//	a.inse
-	std::vector<A> a(10);
+	RBTree<ft::pair<int,int>, std::less<int>, std::allocator<ft::pair<int,int> > >::iterator it = t.begin();
+	RBTree<ft::pair<int,int>, std::less<int>, std::allocator<ft::pair<int,int> > >::const_iterator ite;
+
+	ite = it;
+
+	for (; it != ite; it++)
+		std::cout << it->first << std::endl;
 }

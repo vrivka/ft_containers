@@ -2,7 +2,7 @@
 #define FT_MAP_HPP
 
 #include "ft_pair.hpp"
-#include "RBT.hpp"
+#include "RBTree.hpp"
 #include "RBNode.hpp"
 
 template<class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key,T> > >
@@ -25,7 +25,7 @@ public:
 //	typedef typename ft::iterator_traits<iterator>::difference_type difference_type;//	a signed integral type, identical to: iterator_traits<iterator>::difference_type	usually the same as ptrdiff_t
 	typedef typename allocator_type::size_type size_type;//	an unsigned integral type that can represent any non-negative value of difference_type	usually the same as size_t
 private:
-	RBT<pointer, key_compare, allocator_type> arr;
+	RBTree<pointer, key_compare, allocator_type> arr;
 	size_type len;
 	size_type cap;
 public:

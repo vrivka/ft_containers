@@ -19,7 +19,7 @@ public:
 	/* Constructors */
 
 	vec_iterator() : iter() {};
-	vec_iterator(vec_iterator const &other) : iter(other.iter) {};
+	vec_iterator(const vec_iterator &other) : iter(other.iter) {};
 	vec_iterator(iterator_type x) : iter(x) {};
 
 	/* Destructors */
