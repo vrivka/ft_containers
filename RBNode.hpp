@@ -142,36 +142,35 @@ public:
 	}
 
 
-	RBNode()
-	: A(NULL), An(NULL), val(NULL), color(RED), parent(NULL), left(NULL), right(NULL) {}
+	RBNode() : A(NULL), An(NULL), val(NULL), color(RED), parent(NULL), left(NULL), right(NULL) {}
 
-	RBNode(const RBNode &other)
-	: A(other.A), An(other.An), color(other.color), parent(NULL), left(NULL), right(NULL) {
-		this->val = A->allocate(1);
-		A->construct(this->val, *other.val);
+	RBNode(const RBNode &other) : A(other.A), An(other.An), color(other.color), parent(NULL), left(NULL), right(NULL) {
+		std::cout << An << std::endl;
 		if (other.left) {
 			this->left = An->allocate(1);
 			An->construct(this->left, *other.left);
 			this->left->parent = this;
 		}
+		this->val = A->allocate(1);
+		A->construct(this->val, *other.val);
 		if (other.right) {
 			this->right = An->allocate(1);
-			An->construct(this->right, *other.left);
+			An->construct(this->right, *other.right);
 			this->right->parent = this;
 		}
 	}
 
 	~RBNode() {
+		if (left) {
+			An->destroy(left);
+			An->deallocate(left, 1);
+		}
 		if (right) {
 			An->destroy(right);
 			An->deallocate(right, 1);
 		}
 		A->destroy(val);
 		A->deallocate(val, 1);
-		if (left) {
-			An->destroy(left);
-			An->deallocate(left, 1);
-		}
 	}
 
 	pointer increment(pointer node) {

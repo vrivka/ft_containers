@@ -6,7 +6,7 @@
 #include <stack>
 #include <algorithm>
 #include <map>
-//#include "ft_map.hpp"
+#include "ft_map.hpp"
 #include "RBNode.hpp"
 #include "RBTree.hpp"
 #include <memory>
@@ -36,23 +36,39 @@ public:
 	}
 };
 
+
 int main() {
-	std::less<int> l;
-	std::allocator<ft::pair<int,int> > a;
-	RBTree<ft::pair<int,int>, std::less<int>, std::allocator<ft::pair<int,int> > > t(&a, &l);
+//	namespace ft = std;
+	ft::pair<int, A> p[  3] = {ft::pair<int,A>(1, 2),ft::pair<int,A>(2, 3),ft::pair<int,A>(3, 4)};
+	//	std::pair<int, A> p1[3] = {std::pair<int,A>(1, 2),std::pair<int,A>(2, 3),std::pair<int,A>(3, 4)};
+	std::cout << "\n";
+	ft::map<int, A> *a = new ft::map<int,A>(p+0, p+3);
+	std::cout << "\n";
+	ft::map<int, A> b(*a);
 
-	t.insert(ft::make_pair(1, 2));
-	t.insert(ft::make_pair(2, 2));
-	t.insert(ft::make_pair(3, 2));
-	t.insert(ft::make_pair(4, 2));
-	t.insert(ft::make_pair(5, 2));
-	t.print();
+	delete a;
 
-	RBTree<ft::pair<int,int>, std::less<int>, std::allocator<ft::pair<int,int> > >::iterator it = t.begin();
-	RBTree<ft::pair<int,int>, std::less<int>, std::allocator<ft::pair<int,int> > >::const_iterator ite;
+	b.insert(ft::make_pair(0, 1));
+	b.insert(ft::make_pair(4, 5));
+	b.insert(ft::make_pair(5, 6));
+	b.insert(ft::make_pair(6, 7));
+	b.insert(ft::make_pair(7, 8));
 
-	ite = it;
+	a = new ft::map<int,A>(b);
 
-	for (; it != ite; it++)
-		std::cout << it->first << std::endl;
+	delete a;
+//	for (int i = 0; i < 1000000; i++)
+//		a.insert(ft::make_pair(i, i * 5));
+
+//	ft::map<int, A>::iterator it = a.begin();
+//	ft::map<int, A>::iterator ite = a.end();
+
+//	for (; it != ite; it++ )
+//		std::cout << it->first << ' ' << it->second << std::endl;
+//	std::cout << "\n";
+//	a.print();
+//	std::cout << a.size() << std::endl;
+	std::cout << "\n";
 }
+// 9.262
+// 9.079

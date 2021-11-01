@@ -20,10 +20,10 @@ public:
 	typedef ft::tree_iterator<const_node_pointer, value_type>					const_iterator;			//	a bidirectional iterator to const value_type
 	typedef ft::reverse_iterator<iterator>						reverse_iterator;						//	reverse_iterator<iterator>
 	typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;					//	reverse_iterator<const_iterator>
-private:
 	allocator_type *A;
-	node_allocator_type An;
 	key_compare *comp;
+private:
+	node_allocator_type An;
 	node_pointer root;
 public:
 	iterator				begin() { return iterator(root->min(root), root->min(root), root->max(root)); }
@@ -64,8 +64,9 @@ public:
 		return node;
 	}
 
-	node_pointer insert(value_type v) {
+	ft::pair<iterator, bool> insert(const value_type &v) {
 		node_pointer node = root;
+		bool b = false;
 		if (node) {
 			while (node) {
 				if ((*comp)(v.first, node->val->first)) {
@@ -74,6 +75,7 @@ public:
 					else {
 						node->left = create_node(node->left, node, v);
 						node_type::balance(node->left);
+						b = true;
 					}
 				} else if (v.first != node->val->first) {
 					if (node->right)
@@ -81,6 +83,7 @@ public:
 					else {
 						node->right = create_node(node->right, node, v);
 						node_type::balance(node->right);
+						b = true;
 					}
 				} else break ;
 			}
@@ -88,21 +91,21 @@ public:
 		else {
 			root = create_node(root, NULL, v);
 			node_type::balance(root);
+			b = true;
 		}
 		while (root->parent)
 			root = root->parent;
-		return node;
+		return ft::make_pair(iterator(node, root->min(root), root->max(root)), b);
 	}
 
-	RBTree(allocator_type *alloc = NULL, key_compare *compare = NULL, const node_allocator_type &node_allocator = node_allocator_type())
-	: A(alloc), An(node_allocator), comp(compare), root(NULL) {}
+	RBTree() : A(NULL), comp(NULL), An(), root(NULL) {}
 
-//	RBTree(const RBTree &other) {
-//		if (other.root)
-//			this->root = new node_type(*other.root);
-//		else
-//			this->root = NULL;
-//	}
+	RBTree(const RBTree &other) : A(NULL), comp(NULL), An(), root(NULL) {
+		if (other.root) {
+			this->root = An.allocate(1);
+			An.construct(this->root, *other.root);
+		}
+	}
 
 	~RBTree() {
 		if (root) {
@@ -111,15 +114,20 @@ public:
 		}
 	}
 
-//	RBT &operator=(const RBT &other) {
-//		if (this == &other)
-//			return *this;
-//		delete this->root;
-//		this->root = NULL;
-//		if (other.root)
-//			this->root = new node_type(*other.root);
-//		return *this;
-//	}
+	RBTree &operator=(const RBTree &other) {
+		if (this == &other)
+			return *this;
+		if (this->root) {
+			An.destroy(this->root);
+			An.deallocate(this->root, 1);
+		}
+		this->root = NULL;
+		if (other.root) {
+			this->root = An.allocate(1);
+			An.construct(this->root, *other.root);
+		}
+		return *this;
+	}
 };
 
 
