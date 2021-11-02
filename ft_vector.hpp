@@ -17,10 +17,10 @@ public:
 	typedef typename allocator_type::const_reference				const_reference;		//	for the default allocator: const value_type&
 	typedef typename allocator_type::pointer						pointer;				//	for the default allocator: value_type*
 	typedef typename allocator_type::const_pointer					const_pointer;			//	for the default allocator: const value_type*
-	typedef ft::vec_iterator<pointer>								iterator;				//	a random access iterator to value_type convertible to const_iterator
-	typedef ft::vec_iterator<const_pointer>							const_iterator;			//	a random access iterator to const value_type
-	typedef ft::reverse_iterator<iterator>						reverse_iterator;		//	reverse_iterator<iterator>
-	typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;	//	reverse_iterator<const_iterator>
+	typedef vec_iterator<const_pointer>								const_iterator;			//	a random access iterator to const value_type
+	typedef vec_iterator<pointer>									iterator;				//	a random access iterator to value_type convertible to const_iterator
+	typedef reverse_iterator<const_iterator>						const_reverse_iterator;	//	reverse_iterator<const_iterator>
+	typedef reverse_iterator<iterator>								reverse_iterator;		//	reverse_iterator<iterator>
 	typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;		//	a signed integral type, identical to: iterator_traits<iterator>::difference_type usually the same as ptrdiff_t
 	typedef typename allocator_type::size_type						size_type;				//	an unsigned integral type that can represent any non-negative value of difference_type usually the same as size_t
 private:

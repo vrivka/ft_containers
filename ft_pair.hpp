@@ -27,6 +27,7 @@ public:
 				return true;
 		return false;
 	}
+	friend bool operator==(const first_type &lhs, const pair &rhs) { return lhs == rhs.first; }
 	friend bool operator!=(const pair &lhs, const pair &rhs) { return !(lhs == rhs); }
 	friend bool operator<(const pair &lhs, const pair &rhs) {
 		if (lhs.first < rhs.first)

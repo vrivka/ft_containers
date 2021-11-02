@@ -30,45 +30,32 @@ public:
 	bool operator<=(const A &other) const { std::cout << other.i << " less-equal operator\n"; return i <= other.i; }
 	bool operator>(const A &other) const { std::cout << other.i << " more operator\n"; return i > other.i; }
 	bool operator>=(const A &other) const { std::cout << other.i << " more-equal operator\n"; return i >= other.i; }
-	friend std::ostream &operator<<(std::ostream &out, A const &c) {
-		out << c.i;
-		return out;
-	}
+	friend std::ostream &operator<<(std::ostream &out, A const &c) { out << c.i; return out; }
 };
 
 
 int main() {
 //	namespace ft = std;
-	ft::pair<int, A> p[  3] = {ft::pair<int,A>(1, 2),ft::pair<int,A>(2, 3),ft::pair<int,A>(3, 4)};
+//	ft::pair<int, A> p[  3] = {ft::pair<int,A>(1, 2),ft::pair<int,A>(2, 3),ft::pair<int,A>(3, 4)};
 	//	std::pair<int, A> p1[3] = {std::pair<int,A>(1, 2),std::pair<int,A>(2, 3),std::pair<int,A>(3, 4)};
-	std::cout << "\n";
-	ft::map<int, A> *a = new ft::map<int,A>(p+0, p+3);
-	std::cout << "\n";
-	ft::map<int, A> b(*a);
-
-	delete a;
-
-	b.insert(ft::make_pair(0, 1));
-	b.insert(ft::make_pair(4, 5));
-	b.insert(ft::make_pair(5, 6));
-	b.insert(ft::make_pair(6, 7));
-	b.insert(ft::make_pair(7, 8));
-
-	a = new ft::map<int,A>(b);
-
-	delete a;
-//	for (int i = 0; i < 1000000; i++)
-//		a.insert(ft::make_pair(i, i * 5));
-
-//	ft::map<int, A>::iterator it = a.begin();
-//	ft::map<int, A>::iterator ite = a.end();
-
-//	for (; it != ite; it++ )
-//		std::cout << it->first << ' ' << it->second << std::endl;
+//	ft::map<int, A> a;
 //	std::cout << "\n";
-//	a.print();
-//	std::cout << a.size() << std::endl;
-	std::cout << "\n";
+//
+//	for (int i = 1; i < 8; i++)
+//		a.insert(ft::make_pair(i, i * 5));
+//	std::cout << "\n";
+//
+//
+//	a[8] = 10;
+//	std::cout << "\n";
+	ft::pair<int,A> p1(1, 2);
+	std::cout << std::boolalpha << (1 == p1) << std::endl;
 }
-// 9.262
-// 9.079
+// 2.618
+//2.604
+
+// 3.946
+//3.989
+
+// 3.925
+//4.006

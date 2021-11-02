@@ -4,63 +4,65 @@
 #include "RBNode.hpp"
 #include "ft_tree_iterator.hpp"
 
+namespace ft {
 template<class T, class Compare, class Alloc>
 class RBTree {
 public:
-	typedef Alloc allocator_type;
-	typedef Compare key_compare;
-	typedef typename allocator_type::template rebind<RBNode<T, allocator_type> >::other node_allocator_type;
-	typedef typename node_allocator_type::value_type node_type;
-	typedef typename node_allocator_type::pointer node_pointer;
-	typedef typename node_allocator_type::const_pointer const_node_pointer;
-	typedef T value_type;
-	typedef typename value_type::first_type Key;
-	typedef typename value_type::second_type V;
-	typedef ft::tree_iterator<node_pointer, value_type>							iterator;				//	a bidirectional iterator to value_type convertible to const_iterator
-	typedef ft::tree_iterator<const_node_pointer, value_type>					const_iterator;			//	a bidirectional iterator to const value_type
-	typedef ft::reverse_iterator<iterator>						reverse_iterator;						//	reverse_iterator<iterator>
-	typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;					//	reverse_iterator<const_iterator>
-	allocator_type *A;
-	key_compare *comp;
+	typedef T															value_type;				//	Store value type
+	typedef Alloc														allocator_type;			//	Allocator type for value type
+	typedef Compare														value_comp;				//	Nested function class to compare elements
+	typedef RBNode<value_type, allocator_type>							node;				//	Node type
+	typedef typename allocator_type::template rebind<node>::other	node_allocator_type;	//	Allocator type for node
+	typedef typename node_allocator_type::pointer						node_pointer;			//	Node pointer
+	typedef typename node_allocator_type::const_pointer					const_node_pointer;		//	Constant node pointer
+	typedef tree_iterator<const_node_pointer, value_type>				const_iterator;			//	A bidirectional iterator to const value_type
+	typedef tree_iterator<node_pointer, value_type>						iterator;				//	A bidirectional iterator to value_type convertible to const_iterator
+	typedef reverse_iterator<const_iterator>							const_reverse_iterator;	//	Constant reverse iterator
+	typedef reverse_iterator<iterator>									reverse_iterator;		//	Reverse iterator
+	value_comp			*comp;
 private:
-	node_allocator_type An;
-	node_pointer root;
+	allocator_type		A;
+	node_allocator_type	An;
+	node_pointer		root;
 public:
-	iterator				begin() { return iterator(root->min(root), root->min(root), root->max(root)); }
-	const_iterator			begin() const { return iterator(root->min(root), root->min(root), root->max(root)); }
-	iterator				end() { return ++iterator(root->max(root), root->min(root), root->max(root)); }
-	const_iterator			end() const { return ++iterator(root->max(root), root->min(root), root->max(root)); }
+	iterator begin() { return iterator(root->min(root), root->min(root), root->max(root)); }
 
-	reverse_iterator		rbegin() { return --end(); }
-	const_reverse_iterator	rbegin() const { return --end(); }
-	reverse_iterator		rend() { return --begin(); }
-	const_reverse_iterator	rend() const { return --begin(); }
+	const_iterator begin() const { return iterator(root->min(root), root->min(root), root->max(root)); }
 
-	node_pointer getroot() { return root; }
+	iterator end() { return ++iterator(root->max(root), root->min(root), root->max(root)); }
+
+	const_iterator end() const { return ++iterator(root->max(root), root->min(root), root->max(root)); }
+
+	reverse_iterator rbegin() { return --end(); }
+
+	const_reverse_iterator rbegin() const { return --end(); }
+
+	reverse_iterator rend() { return --begin(); }
+
+	const_reverse_iterator rend() const { return --begin(); }
 
 	void print() const { root->print(root); }
 
-	node_pointer search(Key v) const {
+	template<class Key>
+	iterator search(Key v) {
 		node_pointer node = root;
 		while (node) {
-			if (v == node->val->first)
-				return node;
-			else if ((*comp)(v, node->val->first))
+			if (v == node->val)
+				return iterator(node, root->min(root), root->max(root));
+			else if ((*comp)(v, *node->val))
 				node = node->left;
 			else
 				node = node->right;
 		}
-		return NULL;
+		return end();
 	}
 
 	node_pointer create_node(node_pointer node, node_pointer parent, const value_type &v) {
 		node = An.allocate(1);
 		An.construct(node);
-		node->A = A;
-		node->An = &An;
 		node->parent = parent;
-		node->val = A->allocate(1);
-		A->construct(node->val, v);
+		node->val = A.allocate(1);
+		A.construct(node->val, v);
 		return node;
 	}
 
@@ -69,12 +71,12 @@ public:
 		bool b = false;
 		if (node) {
 			while (node) {
-				if ((*comp)(v.first, node->val->first)) {
+				if ((*comp)(v, *node->val)) {
 					if (node->left)
 						node = node->left;
 					else {
 						node->left = create_node(node->left, node, v);
-						node_type::balance(node->left);
+						node::balance(node->left);
 						b = true;
 					}
 				} else if (v.first != node->val->first) {
@@ -82,15 +84,14 @@ public:
 						node = node->right;
 					else {
 						node->right = create_node(node->right, node, v);
-						node_type::balance(node->right);
+						node::balance(node->right);
 						b = true;
 					}
-				} else break ;
+				} else break;
 			}
-		}
-		else {
+		} else {
 			root = create_node(root, NULL, v);
-			node_type::balance(root);
+			node::balance(root);
 			b = true;
 		}
 		while (root->parent)
@@ -98,9 +99,9 @@ public:
 		return ft::make_pair(iterator(node, root->min(root), root->max(root)), b);
 	}
 
-	RBTree() : A(NULL), comp(NULL), An(), root(NULL) {}
+	RBTree() : A(), comp(NULL), An(), root(NULL) {}
 
-	RBTree(const RBTree &other) : A(NULL), comp(NULL), An(), root(NULL) {
+	RBTree(const RBTree &other) : A(), comp(/***/), An(), root(NULL) {
 		if (other.root) {
 			this->root = An.allocate(1);
 			An.construct(this->root, *other.root);
@@ -130,5 +131,6 @@ public:
 	}
 };
 
+}
 
 #endif //RBTREE_HPP
