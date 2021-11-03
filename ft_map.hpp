@@ -24,9 +24,6 @@ public: ///	it's done
 		bool operator()(const value_type &x, const value_type &y) const {
 			return comp(x.first, y.first);
 		}
-		bool operator()(const key_type &x, const value_type &y) const {
-			return comp(x, y.first);
-		}
 	};														//	Nested function class to compare elements
 	typedef Alloc												allocator_type;			//	The fourth template parameter (Alloc)
 private:
@@ -103,7 +100,7 @@ public:
 
 	/**	Operations **/
 	iterator find (const key_type &k) {
-		return tree.search(k);
+		return tree.search(pair<key_type, mapped_type>(k, mapped_type()));
 	};
 	const_iterator find (const key_type& k) const {
 		return tree.search(k);

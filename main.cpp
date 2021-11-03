@@ -35,21 +35,19 @@ public:
 
 
 int main() {
-//	namespace ft = std;
-//	ft::pair<int, A> p[  3] = {ft::pair<int,A>(1, 2),ft::pair<int,A>(2, 3),ft::pair<int,A>(3, 4)};
-	//	std::pair<int, A> p1[3] = {std::pair<int,A>(1, 2),std::pair<int,A>(2, 3),std::pair<int,A>(3, 4)};
-//	ft::map<int, A> a;
-//	std::cout << "\n";
-//
-//	for (int i = 1; i < 8; i++)
-//		a.insert(ft::make_pair(i, i * 5));
-//	std::cout << "\n";
-//
-//
-//	a[8] = 10;
-//	std::cout << "\n";
-	ft::pair<int,A> p1(1, 2);
-	std::cout << std::boolalpha << (1 == p1) << std::endl;
+	ft::map<A,int> a;
+	std::cout << "\n";
+
+	for (int i = 0; i < 10; i++)
+		a.insert(ft::make_pair(i, i*5));
+	std::cout << "\n";
+	ft::map<A,int>::iterator it = a.find(5);
+	std::cout << it->first << "\n";
+	std::cout << "\n";
+	int i[10];
+	std::vector<int> b(i,i + 10);
+
+	b.insert(b.begin(),i,i+10);
 }
 // 2.618
 //2.604

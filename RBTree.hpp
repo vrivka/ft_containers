@@ -43,16 +43,15 @@ public:
 
 	void print() const { root->print(root); }
 
-	template<class Key>
-	iterator search(Key v) {
+	iterator search(const value_type &v) {
 		node_pointer node = root;
 		while (node) {
-			if (v == node->val)
-				return iterator(node, root->min(root), root->max(root));
-			else if ((*comp)(v, *node->val))
+			if ((*comp)(v, *node->val))
 				node = node->left;
-			else
+			else if ((*comp)(*node->val, v))
 				node = node->right;
+			else
+				return iterator(node, root->min(root), root->max(root));
 		}
 		return end();
 	}
@@ -79,7 +78,7 @@ public:
 						node::balance(node->left);
 						b = true;
 					}
-				} else if (v.first != node->val->first) {
+				} else if ((*comp)(*node->val, v)) {
 					if (node->right)
 						node = node->right;
 					else {
