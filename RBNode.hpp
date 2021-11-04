@@ -40,9 +40,42 @@ public:
 		return node;
 	}
 
+	static int max_height(RBNode *node) {
+		if (not node)
+			return 0;
+		int h_left = max_height(node->left);
+		int h_right = max_height(node->right);
+		if (h_left > h_right)
+			return h_left + 1;
+		else
+			return h_right + 1;
+	}
+
+	static void print_lvl(RBNode *node, int n, int lvl) {
+		if (node) {
+			if (n == lvl) {
+				std::cout << node->val->first;
+				std::cout << (node->color == RED ? 'r' : 'b') << ' ';
+			}
+			else {
+				print_lvl(node->left, n, lvl + 1);
+				print_lvl(node->right, n, lvl + 1);
+			}
+		}
+	}
+
 	static node_pointer grandparent(node_pointer node) { return (node and node->parent ? node->parent->parent : NULL); }
 
-	static node_pointer uncle(node_pointer node) { return (not (node = grandparent(node)) ? NULL : node->left == node->parent ? node->right : node->left); }
+	static node_pointer uncle(node_pointer node) {
+		RBNode *grandparent_ = grandparent(node);
+
+		if (not grandparent_)
+			return NULL;
+		else if (grandparent_->left == node->parent)
+			return grandparent_->right;
+		else
+			return grandparent_->left;
+	}
 
 	static void rotate_left(node_pointer node) {
 		if (not node or not node->right) return ;
@@ -120,146 +153,96 @@ public:
 		*b = c;
 	}
 
-	static void swap_color(node_pointer a, node_pointer b) {
-		uint16_t color = a->color;
-		a->color = b->color;
-		b->color = color;
+	static node_pointer sibling(node_pointer node) {
+		if (node->parent->right == node)
+			return node->parent->left;
+		else if (node->parent->left == node)
+			return node->parent->right;
+		return NULL;
 	}
 
-	static uint16_t right_caser(node_pointer node) {
-		if (node->color == RED) {
-			if (node->left->color == BLACK) {
-				if	((not node->left->left and not node->left->right) or
-					(node->left->left->color == BLACK && node->left->right->color == BLACK)) return 1;
-				else if (node->left->left and node->left->left->color == RED) return 2;
-				else if (node->left->right and node->left->right->color == RED) return 3;
-			}
-		} else {
-			if (node->left->color == RED) {
-				if	(node->left->right->color == BLACK and
-					((not node->left->right->left and not node->left->right->right) or
-					(node->left->right->left->color == BLACK and node->left->right->right->color == BLACK))) return 4;
-				else if (node->left->right->color == BLACK and node->left->right->left->color == RED) return 5;
-			}
-			else {
-				if (node->left->right and node->left->right->color == RED) return 6;
-			}
-		} return 7;
+	static node_pointer right_nephew(node_pointer sibling) {
+		if (not sibling)
+			return NULL;
+		return sibling->right;
 	}
 
-	static void right_balance(node_pointer node) {
-		switch (right_caser(node)) {
-			case 1:
-				swap_color(node, node->left);
-				return ;
-			case 2:
-				node->color = BLACK;
-				node->left->color = RED;
-				node->left->left->color = BLACK;
-				rotate_right(node);
-				return ;
-			case 3:
-				node->color = BLACK;
-				rotate_left(node->left);
-				rotate_right(node);
-				return ;
-			case 4:
-				node->left->right->color = RED;
-				node->left->color = BLACK;
-				rotate_right(node);
-				return ;
-			case 5:
-				node->left->right->left->color == BLACK;
-				rotate_left(node->left);
-				rotate_right(node);
-				return ;
-			case 6:
-				node->left->right->color = BLACK;
-				rotate_left(node->left);
-				rotate_right(node);
-				return ;
-			default:
-				node->left->color = RED;
-				erase_balance(node);
-				return ;
-		}
-	}
-
-	static uint16_t left_caser(node_pointer node) {
-		if (node->color == RED) {
-			if (node->right->color == BLACK) {
-				if	((not node->right->left and not node->right->right) or
-					(node->right->left->color == BLACK and node->right->right->color == BLACK)) return 1;
-				else if (node->right->right and node->right->right->color == RED) return 2;
-				else if (node->right->left and node->right->left->color == RED) return 3;
-			}
-		}
-		else {
-			if (node->right->color == RED) {
-				if	(node->right->left->color == BLACK and
-					((not node->right->left->left and not node->right->left->right) or
-					(node->right->left->left->color == BLACK and node->right->left->right->color == BLACK))) return 4;
-				else if (node->right->left->color == BLACK and node->right->left->right->color == RED) return 5;
-			}
-			else {
-				if (node->right->left and node->right->left->color == RED) return 6;
-			}
-		}
-		return 7;
-	}
-
-	static void left_balance(node_pointer node) {
-		switch (left_caser(node)) {
-			case 1:
-				swap_color(node, node->right);
-				return ;
-			case 2:
-				node->color = BLACK;
-				node->right->color = RED;
-				node->right->right->color = BLACK;
-				rotate_left(node);
-				return ;
-			case 3:
-				node->color = BLACK;
-				rotate_right(node->right);
-				rotate_left(node);
-				return ;
-			case 4:
-				node->right->left->color = RED;
-				node->right->color = BLACK;
-				rotate_left(node);
-				return ;
-			case 5:
-				node->right->left->right->color == BLACK;
-				rotate_right(node->right);
-				rotate_left(node);
-				return ;
-			case 6:
-				node->right->left->color = BLACK;
-				rotate_right(node->right);
-				rotate_left(node);
-				return ;
-			default:
-				node->right->color = RED;
-				erase_balance(node);
-				return ;
-		}
+	static node_pointer left_nephew(node_pointer sibling) {
+		if (not sibling)
+			return NULL;
+		return sibling->left;
 	}
 
 	static void erase_balance(node_pointer node) {
-		node_pointer parent = node->parent;
-		if (not parent) return ;
-		if (parent->right == node)
-			right_balance(parent);
-		else
-			left_balance(parent);
+		node_pointer parent = node->parent, sibling_, right_nephew_, left_nephew_;
+		if (not parent)
+			return ;
+		sibling_ = sibling(node);
+		right_nephew_ = right_nephew(sibling_);
+		left_nephew_ = left_nephew(sibling_);
+		if (parent->color == BLACK and (sibling_ and sibling_->color == RED)) {
+			parent->color = RED;
+			sibling_->color = BLACK;
+			if (parent->right == node)
+				rotate_right(parent);
+			else if (parent->left == node)
+				rotate_left(parent);
+			sibling_ = sibling(node);
+			right_nephew_ = right_nephew(sibling_);
+			left_nephew_ = left_nephew(sibling_);
+		}
+		if (sibling_ and sibling_->color == BLACK) {
+			if ((not right_nephew_ or right_nephew_->color == BLACK) and (not left_nephew_ or left_nephew_->color == BLACK)) {
+				if (parent->color == BLACK) {
+					sibling_->color = RED;
+					erase_balance(parent);
+				}
+				else if (parent->color == RED) {
+					parent->color = BLACK;
+					sibling_->color = RED;
+					return ;
+				}
+			}
+			else if (parent->right == node) {
+				if (right_nephew_ and right_nephew_->color == RED) {
+					sibling_->color = RED;
+					right_nephew_->color = BLACK;
+					rotate_left(sibling_);
+				}
+				sibling_ = sibling(node);
+				left_nephew_ = left_nephew(sibling_);
+				if (left_nephew_ and left_nephew_->color == RED) {
+					sibling_->color = parent->color;
+					parent->color = BLACK;
+					left_nephew_->color = BLACK;
+					rotate_right(parent);
+					return ;
+				}
+			}
+			else if (parent->left == node) {
+				if (left_nephew_ and left_nephew_->color == RED) {
+					sibling_->color = RED;
+					left_nephew_->color = BLACK;
+					rotate_right(sibling_);
+				}
+				sibling_ = sibling(node);
+				right_nephew_ = right_nephew(sibling_);
+				if (right_nephew_ and right_nephew_->color == RED) {
+					sibling_->color = parent->color;
+					parent->color = BLACK;
+					right_nephew_->color = BLACK;
+					rotate_left(parent);
+					return ;
+				}
+			}
+		}
 	}
 
 	static node_pointer erase(node_pointer node) {
 		if (node->left and node->right) { // If there are two children, then we change the values with the left largest node
 			node_pointer swaps;
 
-			swaps = swaps->max(node->left);
+			swaps = node->max(node->left);
 			swap_values(&node->val, &swaps->val);
 			node = swaps;
 		}
@@ -290,6 +273,7 @@ public:
 				return erase(node->left);
 			}
 		}
+		return node;
 	}
 
 	RBNode() : A(), An(), val(NULL), color(RED), parent(NULL), left(NULL), right(NULL) {}

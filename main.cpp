@@ -24,30 +24,26 @@ public:
 	~A() { std::cout << i << " destructor\n"; delete [] a; }
 	A &operator=(A const &other) { std::cout << other.i << " assign operator\n"; if (this == &other) return *this; this->i = other.i; return *this; };
 	A &operator=(int const &other) { std::cout << other << " int assign operator\n"; if (this->i == other) return *this; this->i = other; return *this; };
-	bool operator==(const A &other) const { std::cout << other.i << " equal operator\n"; return i == other.i; }
-	bool operator!=(const A &other) const { std::cout << other.i << " not equal operator\n"; return !(*this == other); }
-	bool operator<(const A &other) const { std::cout << other.i << " less operator\n"; return i < other.i; }
-	bool operator<=(const A &other) const { std::cout << other.i << " less-equal operator\n"; return i <= other.i; }
-	bool operator>(const A &other) const { std::cout << other.i << " more operator\n"; return i > other.i; }
-	bool operator>=(const A &other) const { std::cout << other.i << " more-equal operator\n"; return i >= other.i; }
+	bool operator==(const A &other) const { std::cout << this->i << "==" << other.i << " equal operator\n"; return i == other.i; }
+	bool operator!=(const A &other) const { std::cout << this->i << "!=" << other.i << " not equal operator\n"; return !(*this == other); }
+	bool operator<(const A &other) const { std::cout << this->i << "<" << other.i << " less operator\n"; return i < other.i; }
+	bool operator<=(const A &other) const { std::cout << this->i << "<=" << other.i << " less-equal operator\n"; return i <= other.i; }
+	bool operator>(const A &other) const { std::cout << this->i << ">" << other.i << " more operator\n"; return i > other.i; }
+	bool operator>=(const A &other) const { std::cout << this->i << ">=" << other.i << " more-equal operator\n"; return i >= other.i; }
 	friend std::ostream &operator<<(std::ostream &out, A const &c) { out << c.i; return out; }
 };
 
 
 int main() {
-	ft::map<A,int> a;
-	std::cout << "\n";
+//	namespace ft = std;
+	ft::map<int,int> a;
 
-	for (int i = 0; i < 10; i++)
-		a.insert(ft::make_pair(i, i*5));
-	std::cout << "\n";
-	ft::map<A,int>::iterator it = a.find(5);
-	std::cout << it->first << "\n";
-	std::cout << "\n";
-	int i[10];
-	std::vector<int> b(i,i + 10);
+	for (int i = 1; i < 100; i++ )
+		a.insert(ft::make_pair(i * 10, 2));
 
-	b.insert(b.begin(),i,i+10);
+//	ft::map<int,int>::iterator it = a.begin();
+
+	a.erase(a.begin(), a.end());
 }
 // 2.618
 //2.604
@@ -57,3 +53,9 @@ int main() {
 
 // 3.925
 //4.006
+
+// 27.206
+//15.494
+
+//
+//27.554

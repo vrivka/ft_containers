@@ -1,41 +1,42 @@
 #ifndef FT_TREE_ITERATOR_HPP
 #define FT_TREE_ITERATOR_HPP
 
+#include "ft_map.hpp"
+
 namespace ft {
 template<class V, class VT>
 class tree_iterator {
 public:
 	typedef V								iterator_type;		//	Iterator's type
-	typedef std::bidirectional_iterator_tag	iterator_category;	//	Preserves Iterator's category
 	typedef VT								value_type;			//	Preserves Iterator's value type
 	typedef ptrdiff_t						difference_type;	//	Preserves Iterator's difference type
-	typedef value_type						*pointer;			//	Preserves Iterator's pointer type
-	typedef value_type						&reference;			//	Preserves Iterator's reference type
+	typedef value_type*						pointer;			//	Preserves Iterator's pointer type
+	typedef value_type&						reference;			//	Preserves Iterator's reference type
+	typedef std::bidirectional_iterator_tag	iterator_category;	//	Preserves Iterator's category
 private:
 	iterator_type iter;
-	iterator_type min;
-	iterator_type max;
+	iterator_type *root;
 	int64_t overflow;
 public:
-	/* Constructors */
+	/**	Constructors	**/
 
-	tree_iterator() : iter(), min(), max(), overflow(0) {};
+	tree_iterator() : iter(), root(), overflow(0) {};
 
-	tree_iterator(const tree_iterator &other) : iter(other.iter), min(other.min), max(other.max), overflow(other.overflow) {};
+	tree_iterator(const tree_iterator &other) : iter(other.iter), root(other.root), overflow(other.overflow) {};
 
-	tree_iterator(iterator_type x, iterator_type min, iterator_type max) : iter(x), min(min), max(max), overflow(0) {};
+	tree_iterator(iterator_type x, iterator_type *root) : iter(x), root(root), overflow(0) {};
 
-	/* Destructors */
+	/**	Destructors	**/
 
 	~tree_iterator() {};
 
-	/* Member functions */
+	/**	Member functions	**/
 
 	reference operator*() const throw() { return *(iter->val); };
 
 	tree_iterator &operator++() {
 		if (not overflow) {
-			if (iter == max) {
+			if (iter == (*root)->max(*root)) {
 				iter++;
 				overflow++;
 				return *this;
@@ -43,7 +44,7 @@ public:
 			iter = iter->increment(iter);
 		} else if (overflow == -1) {
 			overflow++;
-			iter = min;
+			iter = (*root)->min(*root);
 		} else {
 			iter++;
 			overflow++;
@@ -59,7 +60,7 @@ public:
 
 	tree_iterator &operator--() {
 		if (not overflow) {
-			if (iter == min) {
+			if (iter == (*root)->min(*root)) {
 				iter--;
 				overflow--;
 				return *this;
@@ -67,7 +68,7 @@ public:
 			iter = iter->decrement(iter);
 		} else if (overflow == 1) {
 			overflow--;
-			iter = max;
+			iter = (*root)->max(*root);
 		} else {
 			iter--;
 			overflow--;
@@ -84,9 +85,10 @@ public:
 	pointer operator->() const { return iter->val; };
 
 	tree_iterator &operator=(const tree_iterator &other) {
+		if (this == &other)
+			return *this;
 		this->iter = other.iter;
-		this->min = other.min;
-		this->max = other.max;
+		this->root = other.root;
 		this->overflow = other.overflow;
 		return *this;
 	};
