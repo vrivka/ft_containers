@@ -48,6 +48,7 @@ private:
 	node_allocator_type An;
 	value_compare comp;
 	node_pointer root;
+	node_pointer head;
 	size_type len;
 public:
 	void print_lvl() {
@@ -112,7 +113,7 @@ public:
 
 	///*	Modifier	*/
 
-	node_pointer create_node(node_pointer node, node_pointer parent, value_type *v) {
+	node_pointer create_node(node_pointer node, node_pointer parent, pointer v) {
 		node = An.allocate(1);
 		An.construct(node);
 		node->parent = parent;
@@ -133,6 +134,7 @@ public:
 		node_pointer node = root;
 		bool b = false;
 		if (node) {
+			root->parent = NULL;
 			while (node) {
 				if (comp(*val, *node->val)) {
 					if (node->left)
@@ -157,11 +159,17 @@ public:
 		} else {
 			root = create_node(root, NULL, val);
 			node_type::balance(root);
+			root->parent = head;
+			head->left = root;
+			head->right = root;
 			b = true;
 			return ft::make_pair(iterator(root, &root), b);
 		}
 		while (root->parent)
 			root = root->parent;
+		root->parent = head;
+		head->left = root;
+		head->right = root;
 		return ft::make_pair(iterator(node, &root), b);
 	} ///
 
@@ -169,6 +177,7 @@ public:
 		node_pointer node = root;
 		bool b = false;
 		if (node) {
+			root->parent = NULL;
 			while (node) {
 				if (comp(val, *node->val)) {
 					if (node->left)
@@ -193,11 +202,17 @@ public:
 		} else {
 			root = create_node(root, NULL, val);
 			node_type::balance(root);
+			head->left = root;
+			head->right = root;
+			root->parent = head;
 			b = true;
 			return ft::make_pair(iterator(root, &root), b);
 		}
 		while (root->parent)
 			root = root->parent;
+		root->parent = head;
+		head->left = root;
+		head->right = root;
 		return ft::make_pair(iterator(node, &root), b);
 	}
 
@@ -306,39 +321,50 @@ public:
 	///*	Constructors	*/
 
 	/*	Default constructor	*/
-	explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : A(alloc), An(), comp(comp), root(NULL), len(0) {}
+	explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : A(alloc), An(), comp(comp), root(NULL), head(NULL), len(0) {}
 
 	/*	Range iterator constructor	*/
 	template<class InputIterator>
 	map(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : A(alloc), An(), comp(comp), root(NULL), len(0) {
+		head = An.allocate(1);
+		An.construct(head);
+		head->color = HEAD;
 		for (; first != last; first++, len++)
 			insert(*first);
 	};
 
 	/*	Copy constructor	*/
 	map(const map &x) : A(x.A), An(x.An), comp(x.comp), len(x.len) {
+		head = An.allocate(1);
+		An.construct(head);
 		if (x.root) {
 			this->root = An.allocate(1);
 			An.construct(this->root, *x.root);
 		}
+		root->parent = head;
+		head->left = root;
+		head->right = root;
 	};
 
 	///*	Destructor	*/
 
 	~map() {
+		root->parent = NULL;
 		if (root) {
 			An.destroy(root);
 			An.deallocate(root, 1);
 		}
+		head->left = NULL;
+		head->right = NULL;
+		An.destroy(head);
+		An.deallocate(head, 1);
 	}
 
 	///*	Assign overload	*/
 	map &operator=(const map &x) {
 		if (this == &x)
 			return *this;
-		this->A = x.A;
-		this->An = x.An;
-		this->comp = x.comp;
+		this->root->parent = NULL;
 		if (this->root) {
 			An.destroy(this->root);
 			An.deallocate(this->root, 1);
@@ -348,9 +374,12 @@ public:
 			this->root = An.allocate(1);
 			An.construct(this->root, *x.root);
 		}
+		this->root->parent = head;
+		head->left = root;
+		head->right = root;
 		this->len = x.len;
 		return *this;
-	};
+	}
 };
 
 }

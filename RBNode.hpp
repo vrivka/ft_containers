@@ -1,7 +1,7 @@
 #ifndef RBNODE_HPP
 #define RBNODE_HPP
 
-enum { RED, BLACK };
+enum { RED, BLACK, HEAD };
 
 template<class T, class Alloc>
 class RBNode {
@@ -302,8 +302,10 @@ public:
 			An.destroy(right);
 			An.deallocate(right, 1);
 		}
-		A.destroy(val);
-		A.deallocate(val, 1);
+		if (this->color != HEAD) {
+			A.destroy(val);
+			A.deallocate(val, 1);
+		}
 	}
 
 	node_pointer increment(node_pointer node) {

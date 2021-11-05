@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <map>
 #include "ft_map.hpp"
-#include "RBNode.hpp"
-#include "RBTree.hpp"
 #include <memory>
 #include <utility>
 
@@ -37,13 +35,16 @@ public:
 int main() {
 //	namespace ft = std;
 	ft::map<int,int> a;
+	ft::map<int,int>::iterator it;
 
-	for (int i = 1; i < 100; i++ )
+	for (int i = 1; i < 100; i++ ) {
 		a.insert(ft::make_pair(i * 10, 2));
+		std::cout << a[i * 10] << std::endl;
+	}
 
 //	ft::map<int,int>::iterator it = a.begin();
 
-	a.erase(a.begin(), a.end());
+//	a.erase(a.begin(), a.end());
 }
 // 2.618
 //2.604
