@@ -1,28 +1,38 @@
 #ifndef RBNODE_HPP
 #define RBNODE_HPP
 
+#include <memory>
+
 enum { RED, BLACK, HEAD };
 
-template<class T, class Alloc>
+namespace ft {
+template<class T>
+void swap_h(T *a, T *b) {
+	T c = *a;
+	*a = *b;
+	*b = c;
+}
+
+template<class Alloc>
 class RBNode {
 public:
-	typedef Alloc													allocator_type;		//	Allocator type for value type
-	typedef typename allocator_type::pointer						pointer;			//	Pointer to value type
-	typedef typename allocator_type::template rebind<RBNode>::other	node_allocator_type;//	Allocator type for node type
-	typedef typename node_allocator_type::pointer					node_pointer;		//	Pointer to node
-	typedef typename node_allocator_type::reference					node_reference;		//	Reference to node
+	typedef Alloc allocator_type;        //	Allocator type for value type
+	typedef typename allocator_type::pointer pointer;            //	Pointer to value type
+	typedef typename allocator_type::template rebind<RBNode>::other node_allocator_type;//	Allocator type for node type
+	typedef typename node_allocator_type::pointer node_pointer;        //	Pointer to node
+	typedef typename node_allocator_type::reference node_reference;        //	Reference to node
 
 	/**	allocators	**/
-	allocator_type		A;
-	node_allocator_type	An;
+	allocator_type A;
+	node_allocator_type An;
 	/**	value	**/
-	pointer				val;
+	pointer val;
 	/**	Node color	**/
-	int16_t				color;
+	int16_t color;
 	/**	Node branches	**/
-	node_pointer		parent;
-	node_pointer		left;
-	node_pointer		right;
+	node_pointer parent;
+	node_pointer left;
+	node_pointer right;
 
 	node_pointer min(node_pointer node) {
 		if (not node)
@@ -192,7 +202,8 @@ public:
 			left_nephew_ = left_nephew(sibling_);
 		}
 		if (sibling_ and sibling_->color == BLACK) {
-			if ((not right_nephew_ or right_nephew_->color == BLACK) and (not left_nephew_ or left_nephew_->color == BLACK)) {
+			if ((not right_nephew_ or right_nephew_->color == BLACK) and
+				(not left_nephew_ or left_nephew_->color == BLACK)) {
 				if (parent->color == BLACK) {
 					sibling_->color = RED;
 					erase_balance(parent);
@@ -238,13 +249,65 @@ public:
 		}
 	}
 
+	static void swap_nodes(node_pointer a, node_pointer b) {
+		node_pointer a_parent = a->parent;
+		if (a_parent and a_parent->left == a)
+			a_parent->left = b;
+		else if (a_parent and a_parent->right == a)
+			a_parent->right = b;
+		b->parent = a_parent;
+		a->parent = b;
+		if (a->left == b) {
+			a->left = b->left;
+			b->left = a;
+		}
+		else if (a->right == b) {
+			a->right = b->right;
+			b->right = a;
+		}
+		uint16_t c = a->color;
+		a->color = b->color;
+		b->color = c;
+	}
+
+	static void swap_nodes1(node_pointer a, node_pointer b) {
+
+		node_pointer a_parent = a->parent;
+		node_pointer a_left = a->left;
+		node_pointer a_right = a->right;
+
+		node_pointer b_parent = b->parent;
+		node_pointer b_left = b->left;
+		node_pointer b_right = b->right;
+
+		if (a_parent and a_parent->left == a)
+			a_parent->left = b;
+		else if (a_parent and a_parent->right == a)
+			a_parent->right = b;
+		if (b_parent and b_parent->left == b)
+			b_parent->left = a;
+		else if (b_parent and b_parent->right == b)
+			b_parent->right = a;
+		if (a_left)
+			a_left->parent = b;
+		if (a_right)
+			a_right->parent = b;
+		if (b_left)
+			b_left->parent = a;
+		if (b_right)
+			b_right->parent = a;
+		ft::swap_h(&a->left, &b->left);
+		ft::swap_h(&a->right, &b->right);
+		ft::swap_h(&a->parent, &b->parent);
+		ft::swap_h(&a->color, &b->color);
+	}
+
 	static node_pointer erase(node_pointer node) {
 		if (node->left and node->right) { // If there are two children, then we change the values with the left largest node
 			node_pointer swaps;
 
 			swaps = node->max(node->left);
-			swap_values(&node->val, &swaps->val);
-			node = swaps;
+			swap_nodes1(node, swaps);
 		}
 		if (node->color == RED and (not node->right and not node->left)) { // If node is RED and no children, delete it
 			if (node->parent->left == node)
@@ -265,12 +328,12 @@ public:
 		}
 		else if (node->color == BLACK) { // If node is BLACK and has one child(always RED), swap values and delete child
 			if (node->right) {
-				swap_values(&node->val, &node->right->val);
-				return erase(node->right);
+				swap_nodes(node, node->right);
+				return erase(node);
 			}
-			else {
-				swap_values(&node->val, &node->left->val);
-				return erase(node->left);
+			else if (node->left) {
+				swap_nodes(node, node->left);
+				return erase(node);
 			}
 		}
 		return node;
@@ -314,7 +377,7 @@ public:
 		else if (node->parent) {
 			if (node->parent->left == node) return node->parent;
 			else if (node->parent->right == node) {
-				while (node->parent and node->parent->right == node)
+				while (node->parent and node->parent->color != HEAD and node->parent->right == node)
 					node = node->parent;
 				return node->parent;
 			}
@@ -367,4 +430,5 @@ public:
 	}
 };
 
+}
 #endif

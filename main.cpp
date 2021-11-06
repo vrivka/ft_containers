@@ -1,4 +1,5 @@
 #include <iostream>
+#include "ft_map.hpp"
 #include "ft_vector.hpp"
 #include "ft_stack.hpp"
 #include <iomanip>
@@ -6,9 +7,6 @@
 #include <stack>
 #include <algorithm>
 #include <map>
-#include "ft_map.hpp"
-#include <memory>
-#include <utility>
 
 
 class A {
@@ -33,30 +31,5 @@ public:
 
 
 int main() {
-//	namespace ft = std;
-	ft::map<int,int> a;
-	ft::map<int,int>::iterator it;
 
-	for (int i = 1; i < 100; i++ ) {
-		a.insert(ft::make_pair(i * 10, 2));
-		std::cout << a[i * 10] << std::endl;
-	}
-
-//	ft::map<int,int>::iterator it = a.begin();
-
-//	a.erase(a.begin(), a.end());
 }
-// 2.618
-//2.604
-
-// 3.946
-//3.989
-
-// 3.925
-//4.006
-
-// 27.206
-//15.494
-
-//
-//27.554

@@ -19,7 +19,12 @@ public:
 	/* Constructors */
 
 	vec_iterator() : iter() {};
+
 	vec_iterator(const vec_iterator &other) : iter(other.iter) {};
+
+	template<class UP>
+	vec_iterator(const vec_iterator<UP> &other) : iter(other.base()) {};
+
 	vec_iterator(iterator_type x) : iter(x) {};
 
 	/* Destructors */
@@ -28,7 +33,7 @@ public:
 
 	/* Member functions */
 
-	iterator_type base() { return iter; };
+	iterator_type base() const { return iter; };
 
 	reference operator*() const throw() { return *iter; };
 

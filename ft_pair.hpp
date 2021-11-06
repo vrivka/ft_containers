@@ -7,7 +7,7 @@ class pair {
 public:
 	typedef	T1	first_type;	//	The first template parameter (T1)
 	typedef	T2	second_type;//	The second template parameter (T2)
-	const first_type first;
+	first_type first;
 	second_type	second;
 	pair() : first(), second() {}
 	template<class U, class V>
@@ -15,7 +15,7 @@ public:
 	pair(const first_type &first, const second_type &second) : first(first), second(second) {}
 	~pair() {}
 	pair &operator=(const pair &other) {
-		if (this == *other)
+		if (this == &other)
 			return *this;
 		this->first = other.first;
 		this->second = other.second;
