@@ -7,9 +7,7 @@
 #include "ft_pair.hpp"
 #include "ft_reverse_iterator.hpp"
 #include "ft_tree_iterator.hpp"
-#include "iterator_traits.hpp"
-#include "ft_enable_if.hpp"
-#include "ft_is_integral.hpp"
+#include "ft_utilities.hpp"
 
 namespace ft {
 template<class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<pair<const Key, T> > >
@@ -52,6 +50,11 @@ private:
 	node_pointer		head;
 	size_type			len;
 public:
+
+	key_compare key_comp() {
+		return key_compare();
+	}
+
 	void print_lvl() {
 		int h = node_type::max_height(root);
 		for (int i = 0; i < h; i++) {
@@ -114,7 +117,8 @@ public:
 						node = node->left;
 					else {
 						node->left = create_node(node->left, node, val);
-						node_type::balance(node->left);
+						node = node->left;
+						node_type::balance(node);
 						b = true;
 						break ;
 					}
@@ -123,7 +127,8 @@ public:
 						node = node->right;
 					else {
 						node->right = create_node(node->right, node, val);
-						node_type::balance(node->right);
+						node = node->right;
+						node_type::balance(node);
 						b = true;
 						break ;
 					}
@@ -140,17 +145,18 @@ public:
 		while (root->parent)
 			root = root->parent;
 		enable_head();
-		len++;
+		if (b)
+			len++;
 		return ft::make_pair(node, b);
 	} ///
 
 	/**	Iterators	**/
 
-	iterator begin() { return root->min(root); }
-	const_iterator begin() const { return root->min(root); }
+	iterator begin() { return root ? root->min(root) : head; }
+	const_iterator begin() const { return root ? iterator(root->min(root)) : end(); }
 
 	iterator end() { return head; }
-	const_iterator end() const { return head; }
+	const_iterator end() const { return iterator(head); }
 
 	reverse_iterator rbegin() { return --end(); }
 	const_reverse_iterator rbegin() const { return --end(); }
@@ -172,19 +178,16 @@ public:
 		node_pointer node = root;
 		key_compare com;
 		while (node) {
-			if (com(k, node->val->first)) {
+			if (com(k, node->val->first))
 				node = node->left;
-			}
-			else if (com(node->val->first, k)) {
+			else if (com(node->val->first, k))
 				node = node->right;
-			}
-			else {
+			else
 				return node->val->second;
-			}
 		}
 		pointer v = alloc_val(k);
-		return insert(v).first->second;
-
+		pair<iterator, bool> ret = insert(v);
+		return ret.first->second;
 	}
 
 	/**	Modifier	**/
@@ -200,7 +203,8 @@ public:
 						node = node->left;
 					else {
 						node->left = create_node(node->left, node, val);
-						node_type::balance(node->left);
+						node = node->left;
+						node_type::balance(node);
 						b = true;
 						break ;
 					}
@@ -209,13 +213,15 @@ public:
 						node = node->right;
 					else {
 						node->right = create_node(node->right, node, val);
-						node_type::balance(node->right);
+						node = node->right;
+						node_type::balance(node);
 						b = true;
 						break ;
 					}
 				} else break;
 			}
-		} else {
+		}
+		else {
 			root = create_node(root, NULL, val);
 			node_type::balance(root);
 			enable_head();
@@ -226,7 +232,8 @@ public:
 		while (root->parent)
 			root = root->parent;
 		enable_head();
-		len++;
+		if (b)
+			len++;
 		return ft::make_pair(node, b);
 	}
 
@@ -304,6 +311,35 @@ public:
 		len = 0;
 	}// Clear content (public member function )
 
+
+	mapped_type &at(const key_type& k) {
+		node_pointer node = root;
+		key_compare com;
+		while (node) {
+			if (com(k, node->val->first))
+				node = node->left;
+			else if (com(node->val->first, k))
+				node = node->right;
+			else
+				return node->val->second;
+		}
+		throw std::out_of_range("map");
+	}///
+
+	const mapped_type& at (const key_type& k) const{
+		node_pointer node = root;
+		key_compare com;
+		while (node) {
+			if (com(k, node->val->first))
+				node = node->left;
+			else if (com(node->val->first, k))
+				node = node->right;
+			else
+				return node->val->second;
+		}
+		throw std::out_of_range("map");
+	}///
+
 	/**	Operations **/
 	iterator find (const key_type &k) {
 		node_pointer node = root;
@@ -351,10 +387,10 @@ public:
 		iterator it = begin();
 		key_compare com;
 
-		while (com(it->first, k))
-			it++;
 		while (it != end() and com(it->first, k))
-			it--;
+			++it;
+		while (it != end() and com(it->first, k))
+			--it;
 		return it;
 	}
 
@@ -362,10 +398,10 @@ public:
 		const_iterator it = begin();
 		key_compare com;
 
-		while (com(it->first, k))
-			it++;
 		while (it != end() and com(it->first, k))
-			it--;
+			++it;
+		while (it != end() and com(it->first, k))
+			--it;
 		return it;
 	}//	Return iterator to lower bound (public member function )
 
@@ -373,10 +409,10 @@ public:
 		iterator it = begin();
 		key_compare com;
 
-		while (com(it->first, k))
-			it++;
+		while (it != end() and com(it->first, k))
+			++it;
 		while (it != end() and not com(k, it->first))
-			it++;
+			++it;
 		return it;
 	}
 
@@ -384,11 +420,10 @@ public:
 		const_iterator it = begin();
 		key_compare com;
 
-		while (com(it->first, k))
-			it++;
 		while (it != end() and com(it->first, k))
-			it--;
-		it++;
+			++it;
+		while (it != end() and not com(k, it->first))
+			++it;
 		return it;
 	}//	Return iterator to upper bound (public member function )
 
@@ -424,6 +459,9 @@ public:
 			this->root = An.allocate(1);
 			An.construct(this->root, *x.root);
 		}
+		else
+			root = NULL;
+		head->color = HEAD;
 		enable_head();
 	};
 
@@ -462,18 +500,10 @@ public:
 
 	/*	Relational operators	*/
 	friend bool operator==(const map<Key, T, Compare, Alloc> &lhs, const map<Key, T, Compare, Alloc> &rhs) {
-		if (lhs.len == rhs.len) {
-			iterator lit = lhs.begin();
-			iterator lite = lhs.end();
-			iterator rit = rhs.begin();
-			iterator rite = rhs.end();
-			for (; i < lhs.len;) {
-				if (lhs.arr[i] != rhs.arr[i])
-					return false;
-			}
-			return true;
-		}
-		return false;
+		if (lhs.len == rhs.len)
+			return ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+		else
+			return false;
 	}
 
 	friend bool operator!=(const map<Key, T, Compare, Alloc> &lhs, const map<Key, T, Compare, Alloc> &rhs) { return !(lhs == rhs); }
@@ -481,13 +511,8 @@ public:
 	friend bool operator<(const map<Key, T, Compare, Alloc> &lhs, const map<Key, T, Compare, Alloc> &rhs) {
 		if (lhs.len < rhs.len)
 			return true;
-		for (size_type i = 0; i < lhs.len; i++) {
-			if (lhs.arr[i] < rhs.arr[i])
-				return true;
-			else if (lhs.arr[i] > rhs.arr[i])
-				return false;
-		}
-		return false;
+		else
+			return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), lhs.end(), std::less<value_type>());
 	}
 
 	friend bool operator<=(const map<Key, T, Compare, Alloc> &lhs, const map<Key, T, Compare, Alloc> &rhs) { return !(rhs < lhs); }
@@ -496,10 +521,12 @@ public:
 
 	friend bool operator>=(const map<Key, T, Compare, Alloc> &lhs, const map<Key, T, Compare, Alloc> &rhs) { return !(lhs < rhs); }
 
-	template<class K, class V, class compare, class alloc>
-	friend void swap(map<K, V, compare, alloc> &x, map<K, V, compare, alloc> &y) { x.swap(y); }
 };
 
 }
 
+namespace std{
+template<class K, class V, class compare, class alloc>
+void swap(ft::map<K, V, compare, alloc> &x, ft::map<K, V, compare, alloc> &y) { x.swap(y); }
+}
 #endif

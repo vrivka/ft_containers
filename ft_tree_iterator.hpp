@@ -22,10 +22,19 @@ public:
 
 	tree_iterator(const tree_iterator &other) : iter(other.iter), head(other.head), overflow(other.overflow) {};
 
-	tree_iterator(iterator_type x) : iter(x), overflow(0) {
-		head = x;
-		while (head->parent)
-			head = head->parent;
+	tree_iterator(iterator_type x) {
+		if (x and x->parent) {
+			overflow = 0;
+			iter = x;
+			head = x;
+			while (head->parent)
+				head = head->parent;
+		}
+		else if (x and not x->parent) {
+			overflow = 1;
+			iter = x;
+			head = x;
+		}
 	};
 
 	/**	Destructors	**/
@@ -38,12 +47,11 @@ public:
 
 	tree_iterator &operator++() {
 		if (not overflow) {
-			if (iter == head) {
-				iter++;
-				overflow++;
-				return *this;
-			}
 			iter = iter->increment(iter);
+			if (not iter or iter == head) {
+				iter = head;
+				overflow++;
+			}
 		}
 		else if (overflow == -1) {
 			overflow++;
@@ -64,12 +72,11 @@ public:
 
 	tree_iterator &operator--() {
 		if (not overflow) {
-			if (iter == head) {
-				iter--;
-				overflow--;
-				return *this;
-			}
 			iter = iter->decrement(iter);
+			if (not iter or iter == head) {
+				overflow--;
+				iter = head;
+			}
 		}
 		else if (overflow == 1) {
 			overflow--;
