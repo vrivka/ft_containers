@@ -43,7 +43,7 @@ public:
 
 	/**	Member functions	**/
 
-	reference operator*() const throw() { return *(iter->val); };
+	reference operator*() const throw() { return *(iter->value); };
 
 	tree_iterator &operator++() {
 		if (not overflow) {
@@ -95,7 +95,7 @@ public:
 		return tmp;
 	};
 
-	pointer operator->() const { return iter->val; };
+	pointer operator->() const { return iter->value; };
 
 	tree_iterator &operator=(const tree_iterator &other) {
 		if (this == &other)
