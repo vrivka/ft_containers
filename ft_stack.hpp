@@ -7,11 +7,11 @@ namespace ft {
 template<class T, class Container = vector<T> >
 class stack {
 public:
-	typedef T											value_type;		//	The first template parameter (T). Type of the elements
-	typedef Container									container_type;	//	The second template parameter (Container). Type of the underlying container
-	typedef typename container_type::size_type			size_type;		//	an unsigned integral type, usually the same as size_t
-	typedef typename container_type::reference			reference;		//	for the default allocator: value_type&
-	typedef typename container_type::const_reference	const_reference;//	for the default allocator: const value_type&
+	typedef T											value_type;		//	The first template parameter (T)
+	typedef Container									container_type;	//	The second template parameter (Container)
+	typedef typename container_type::size_type			size_type;		//	An unsigned integral type, usually the same as size_t
+	typedef typename container_type::reference			reference;		//	For the default allocator: value_type&
+	typedef typename container_type::const_reference	const_reference;//	For the default allocator: const value_type&
 protected:
 	container_type _underlying_container;
 public:

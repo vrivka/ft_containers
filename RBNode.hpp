@@ -1,6 +1,8 @@
 #ifndef RBNODE_HPP
 #define RBNODE_HPP
 
+#include <iostream>
+
 enum { RED, BLACK, HEAD };
 
 namespace ft {

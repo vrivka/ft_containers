@@ -7,8 +7,11 @@ class pair {
 public:
 	typedef	T1	first_type;	//	The first template parameter
 	typedef	T2	second_type;//	The second template parameter
+
 	first_type	first;
 	second_type	second;
+
+	/**	Constructors	**/
 
 	pair() : first(), second() {}
 
@@ -17,8 +20,11 @@ public:
 
 	pair(const first_type &first, const second_type &second) : first(first), second(second) {}
 
+	/**	Destructor	**/
+
 	~pair() {}
 
+	/**	Assign overload	**/
 	pair &operator=(const pair &other) {
 		if (this == &other)
 			return *this;
@@ -26,6 +32,8 @@ public:
 		second = other.second;
 		return *this;
 	}
+
+	/**	Non-member functions	**/
 
 	friend bool operator==(const pair &left, const pair &right) {
 		if (left.first == right.first)

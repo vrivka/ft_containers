@@ -28,11 +28,11 @@ public:
 	typedef typename allocator_type::pointer							pointer;				//	allocator_type::pointer	for the default allocator
 	typedef typename allocator_type::const_pointer						const_pointer;			//	allocator_type::const_pointer for the default allocator
 	typedef tree_iterator<node_pointer, const value_type>				iterator;				//	A bidirectional iterator to value_type convertible to const_iterator
-	typedef tree_const_iterator<iterator, const value_type>				const_iterator;			//	A bidirectional iterator to const value_type
+	typedef tree_iterator<node_pointer, const value_type>				const_iterator;			//	A bidirectional iterator to const value_type
 	typedef reverse_iterator<const_iterator>							const_reverse_iterator;	//	Constant reverse iterator
 	typedef reverse_iterator<iterator>									reverse_iterator;		//	Reverse iterator
 	typedef typename iterator_traits<iterator>::difference_type			difference_type;		//	A signed integral type, identical to: iterator_traits<iterator>::difference_type usually the same as ptrdiff_t
-	typedef typename allocator_type::size_type							size_type;				//	an unsigned integral type that can represent any non-negative value of difference_type usually the same as size_t
+	typedef typename allocator_type::size_type							size_type;				//	An unsigned integral type that can represent any non-negative value of difference_type usually the same as size_t
 private:
 	allocator_type		_allocator;
 	node_allocator_type	_node_allocator;
@@ -72,6 +72,7 @@ private:
 		return node;
 	}
 public:
+
 	/**	Iterators	**/
 
 	iterator begin() { return _root ? _root->min(_root) : _head; }
@@ -80,11 +81,11 @@ public:
 	iterator end() { return _head; }
 	const_iterator end() const { return iterator(_head); }
 
-	reverse_iterator rbegin() { return --end(); }
-	const_reverse_iterator rbegin() const { return --end(); }
+	reverse_iterator rbegin() { return end(); }
+	const_reverse_iterator rbegin() const { return end(); }
 
-	reverse_iterator rend() { return --begin(); }
-	const_reverse_iterator rend() const { return --begin(); }
+	reverse_iterator rend() { return begin(); }
+	const_reverse_iterator rend() const { return begin(); }
 
 	/**	Capacity	**/
 
@@ -214,17 +215,19 @@ public:
 		_root = NULL;
 		enable_head();
 		_size = 0;
-	}// Clear content (public member function )
+	}
 
 	/**	Observer	**/
 
-	key_compare key_comp() {
-		return key_compare();
-	}
+	key_compare key_comp() { return key_compare(); }
+	key_compare key_comp() const { return key_compare(); }
+
+	value_compare value_comp() { return value_compare(key_compare()); }
+	value_compare value_comp() const { return value_compare(key_compare()); }
 
 	/**	Operations **/
 
-	iterator find (const key_type &key) {
+	iterator find (const key_type &key) const {
 		node_pointer node = _root;
 
 		while (node) {
@@ -233,24 +236,10 @@ public:
 			else if (_val_comp(*node->value, key))
 				node = node->right;
 			else
-				return node;
+				return iterator(node);
 		}
-		return end();
+		return iterator(_head);
 	}
-
-	const_iterator find (const key_type &key) const {
-		node_pointer node = _root;
-
-		while (node) {
-			if (_val_comp(key, *node->value))
-				node = node->left;
-			else if (_val_comp(*node->value, key))
-				node = node->right;
-			else
-				return node;
-		}
-		return end();
-	}	//	Get iterator to element (public member function )
 
 	size_type count (const key_type &key) const {
 		node_pointer node = _root;
@@ -264,9 +253,9 @@ public:
 				return 1;
 		}
 		return 0;
-	}//	Count elements with a specific key (public member function )
+	}
 
-	iterator lower_bound(const key_type& key) {
+	iterator lower_bound(const key_type& key) const {
 		node_pointer node = _root,  tmp = NULL;
 
 		while (node) {
@@ -278,11 +267,11 @@ public:
 			}
 		}
 		if (not tmp)
-			return end();
-		return tmp;
+			return iterator(_head);
+		return iterator(tmp);
 	}
 
-	iterator upper_bound(const key_type& key) {
+	iterator upper_bound(const key_type& key) const {
 		node_pointer node = _root,  tmp = NULL;
 
 		while (node) {
@@ -294,15 +283,14 @@ public:
 			}
 		}
 		if (not tmp)
-			return end();
-		return tmp;
+			return iterator(_head);
+		return iterator(tmp);
 	}
 
-	pair<iterator,iterator> equal_range(const key_type& key) { return ft::make_pair<iterator,iterator>(lower_bound(key), upper_bound(key)); }//	Get range of equal elements (public member function )
+	pair<iterator,iterator> equal_range(const key_type& key) const { return ft::make_pair<iterator,iterator>(lower_bound(key), upper_bound(key)); }
 
 	/**	Constructors	**/
 
-	/*	Default constructor	*/
 	explicit set(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : _allocator(alloc), _node_allocator(), _val_comp(comp), _root(NULL), _size(0) {
 		_head = _node_allocator.allocate(1);
 		_node_allocator.construct(_head);
@@ -310,18 +298,16 @@ public:
 		enable_head();
 	}
 
-	/*	Range iterator constructor	*/
 	template<class InputIterator>
 	set(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type())
 	: _allocator(alloc), _node_allocator(), _val_comp(comp), _root(NULL), _size(0) {
 		_head = _node_allocator.allocate(1);
 		_node_allocator.construct(_head);
 		_head->color = HEAD;
-		for (; first != last; ++first, ++_size)
+		for (; first != last; ++first)
 			insert(*first);
 	};
 
-	/*	Copy constructor	**/
 	set(const set &other) : _allocator(other._allocator), _node_allocator(other._node_allocator), _val_comp(other._val_comp), _size(other._size) {
 		_head = _node_allocator.allocate(1);
 		_node_allocator.construct(_head);
@@ -335,7 +321,7 @@ public:
 		enable_head();
 	};
 
-	/*	Destructor	*/
+	/**	Destructor	**/
 
 	~set() {
 		disable_head();
@@ -369,7 +355,6 @@ public:
 
 	/**	Non-member function	**/
 
-	/*	Relational operators	*/
 	friend bool operator==(const set &left, const set &right) {
 		if (left._size == right._size)
 			return ft::equal(left.begin(), left.end(), right.begin());

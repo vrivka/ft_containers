@@ -29,16 +29,6 @@ private:
 	size_type		_capacity;
 	pointer			_pointer;
 
-	template<class InputIterator>
-	size_type num_of_range(InputIterator first, InputIterator last) {
-		if (typeid(typename ft::iterator_traits<InputIterator>::iterator_category) == typeid(std::random_access_iterator_tag))
-			return last - first;
-		else {
-			size_type num = 0;
-			for (; first != last; first++, num++);
-			return num;
-		}
-	}
 public:
 	/**	Iterators	**/
 
@@ -53,14 +43,14 @@ public:
 	const_iterator			end() const { return _pointer + _size; }
 
 	/*	Return reverse iterator to reverse beginning	*/
-	reverse_iterator		rbegin() { return end() - 1; }
+	reverse_iterator		rbegin() { return end(); }
 
-	const_reverse_iterator	rbegin() const { return end() - 1; }
+	const_reverse_iterator	rbegin() const { return end(); }
 
 	/*	Return reverse iterator to reverse end	*/
-	reverse_iterator		rend() { return begin() - 1; }
+	reverse_iterator		rend() { return begin(); }
 
-	const_reverse_iterator	rend() const { return begin() - 1; }
+	const_reverse_iterator	rend() const { return begin(); }
 
 	/**	Capacity	**/
 
@@ -179,7 +169,7 @@ public:
 	template<class InputIterator>
 	typename enable_if< not is_integral<InputIterator>::value >::type
 	assign(InputIterator first, InputIterator last) {
-		size_type num = num_of_range(first, last), index;
+		size_type num = std::distance(first, last), index;
 
 		if (_capacity >= num) {
 			for (index = 0; index < num; ++index)
@@ -340,7 +330,7 @@ public:
 
 	template<class InputIterator>
 	typename enable_if< not is_integral<InputIterator>::value >::type insert(iterator position, InputIterator first, InputIterator last) {
-		size_type pos_index = position - begin(), num = num_of_range(first, last), index;
+		size_type pos_index = position - begin(), num = std::distance(first, last), index;
 
 		if (_capacity == 0) {
 			_allocator.deallocate(_pointer, _capacity);
@@ -403,7 +393,7 @@ public:
 		for (size_type index = 0; index < range_size; ++index)
 			_allocator.destroy(_pointer + _size - index - 1);
 		_size -= range_size;
-		return last;
+		return first;
 	}
 
 	/*	Swap content	*/
@@ -447,7 +437,7 @@ public:
 	/*	Iterator constructor	*/
 	template<class InputIterator>
 	vector(InputIterator first, typename enable_if< !is_integral<InputIterator>::value, InputIterator >::type last, const allocator_type &alloc = allocator_type()) : _allocator(alloc) {
-		size_type num = num_of_range(first, last), index;
+		size_type num = std::distance(first, last), index;
 		_capacity = num;
 		_size = num;
 		_pointer = _allocator.allocate(_capacity);

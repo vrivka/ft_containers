@@ -41,7 +41,7 @@ public:
 	typedef reverse_iterator<const_iterator>							const_reverse_iterator;	//	Constant reverse iterator
 	typedef reverse_iterator<iterator>									reverse_iterator;		//	Reverse iterator
 	typedef typename iterator_traits<iterator>::difference_type			difference_type;		//	A signed integral type, identical to: iterator_traits<iterator>::difference_type usually the same as ptrdiff_t
-	typedef typename allocator_type::size_type							size_type;				//	an unsigned integral type that can represent any non-negative value of difference_type usually the same as size_t
+	typedef typename allocator_type::size_type							size_type;				//	An unsigned integral type that can represent any non-negative value of difference_type usually the same as size_t
 private:
 	allocator_type		_allocator;
 	node_allocator_type	_node_allocator;
@@ -144,40 +144,28 @@ public:
 
 	/**	Iterators	**/
 
-	/*	Return iterator to beginning	*/
 	iterator begin() { return _root ? _root->min(_root) : _head; }
-
 	const_iterator begin() const { return _root ? iterator(_root->min(_root)) : end(); }
 
-	/*	Return iterator to end	*/
 	iterator end() { return _head; }
-
 	const_iterator end() const { return iterator(_head); }
 
-	/*	Return reverse iterator to reverse beginning	*/
-	reverse_iterator rbegin() { return --end(); }
+	reverse_iterator rbegin() { return end(); }
+	const_reverse_iterator rbegin() const { return end(); }
 
-	const_reverse_iterator rbegin() const { return --end(); }
-
-	/*	Return reverse iterator to reverse end	*/
-	reverse_iterator rend() { return --begin(); }
-
-	const_reverse_iterator rend() const { return --begin(); }
+	reverse_iterator rend() { return begin(); }
+	const_reverse_iterator rend() const { return begin(); }
 
 	/**	Capacity	**/
 
-	/*	Test whether container is empty	*/
 	bool empty() const { return _size == 0; }
 
-	/*	Return container size	*/
 	size_type size() const { return _size; }
 
-	/*	Return maximum size	*/
 	size_type max_size() const { return _node_allocator.max_size(); }
 
 	/**	Element access	**/
 
-	/*	Access element	*/
 	mapped_type &operator[](const key_type &key) {
 		node_pointer node = _root;
 		key_compare k_comp;
@@ -208,7 +196,6 @@ public:
 		}
 		throw std::out_of_range("map");
 	}
-
 	const mapped_type &at(const key_type& key) const {
 		node_pointer node = _root;
 		key_compare k_comp;
@@ -225,7 +212,6 @@ public:
 
 	/**	Modifier	**/
 
-	/*	Insert elements	*/
 	pair<iterator,bool> insert(const value_type &value) {
 		node_pointer node = _root;
 		bool is_insert = false;
@@ -283,7 +269,6 @@ public:
 			insert(*first);
 	}
 
-	/*	Erase elements	*/
 	void erase(iterator position) { erase(position->first); }
 
 	size_type erase(const key_type& key) {
@@ -323,7 +308,6 @@ public:
 			erase(first++);
 	}
 
-	/*	Swap content	*/
 	void swap(map &other) {
 		node_pointer tmp_root = _root;
 		_root = other._root;
@@ -338,7 +322,6 @@ public:
 		other._size = tmp_len;
 	}
 
-	/*	Clear content	*/
 	void clear() {
 		disable_head();
 		if (_root) {
@@ -350,15 +333,16 @@ public:
 		_size = 0;
 	}
 
-
 	/**	Observer	**/
 
-	/*	Return key comparison object	*/
 	key_compare key_comp() { return key_compare(); }
+	key_compare key_comp() const { return key_compare(); }
+
+	value_compare value_comp() { return value_compare(key_compare()); }
+	value_compare value_comp() const { return value_compare(key_compare()); }
 
 	/**	Operations **/
 
-	/*	Get iterator to element	*/
 	iterator find(const key_type &key) {
 		node_pointer node = _root;
 		key_compare key_comp;
@@ -382,12 +366,11 @@ public:
 			else if (com(node->value->first, key))
 				node = node->right;
 			else
-				return node;
+				return iterator(node);
 		}
 		return end();
 	}
 
-	/*	Count elements with a specific key	*/
 	size_type count(const key_type &key) const {
 		node_pointer node = _root;
 		key_compare k_comp;
@@ -402,7 +385,6 @@ public:
 		return 0;
 	}
 
-	/*	Return iterator to lower bound	*/
 	iterator lower_bound(const key_type& key) {
 		node_pointer node = _root,  tmp = NULL;
 		key_compare k_comp;
@@ -434,10 +416,9 @@ public:
 		}
 		if (not tmp)
 			return end();
-		return tmp;
+		return iterator(tmp);
 	}
 
-	/*	Return iterator to upper bound	*/
 	iterator upper_bound(const key_type& key) {
 		node_pointer node = _root,  tmp = NULL;
 		key_compare k_comp;
@@ -469,17 +450,15 @@ public:
 		}
 		if (not tmp)
 			return end();
-		return tmp;
+		return iterator(tmp);
 	}
 
-	/*	Get range of equal elements	*/
-	pair<const_iterator,const_iterator> equal_range(const key_type& key) const { return make_pair<const_iterator,const_iterator>(lower_bound(key), upper_bound(key)); }
+	pair<const_iterator,const_iterator> equal_range(const key_type& key) const { return ft::make_pair<const_iterator,const_iterator>(lower_bound(key), upper_bound(key)); }
 
 	pair<iterator,iterator> equal_range(const key_type& key) { return ft::make_pair<iterator,iterator>(lower_bound(key), upper_bound(key)); }
 
 	/**	Constructors	**/
 
-	/*	Default constructor	*/
 	explicit map(const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type()) : _allocator(alloc), _node_allocator(), _val_comp(comp), _root(NULL), _size(0) {
 		_head = _node_allocator.allocate(1);
 		_node_allocator.construct(_head);
@@ -487,18 +466,16 @@ public:
 		enable_head();
 	}
 
-	/*	Range iterator constructor	*/
 	template<class InputIterator>
 	map(InputIterator first, InputIterator last, const key_compare &comp = key_compare(), const allocator_type &alloc = allocator_type())
 	: _allocator(alloc), _node_allocator(), _val_comp(comp), _root(NULL), _size(0) {
 		_head = _node_allocator.allocate(1);
 		_node_allocator.construct(_head);
 		_head->color = HEAD;
-		for (; first != last; ++first, ++_size)
+		for (; first != last; ++first)
 			insert(*first);
 	}
 
-	/*	Copy constructor	*/
 	map(const map &other) : _allocator(other._allocator), _node_allocator(other._node_allocator), _val_comp(other._val_comp), _size(other._size) {
 		_head = _node_allocator.allocate(1);
 		_node_allocator.construct(_head);
@@ -512,7 +489,7 @@ public:
 		enable_head();
 	}
 
-	/*	Destructor	*/
+	/**	Destructor	**/
 
 	~map() {
 		disable_head();
@@ -545,8 +522,6 @@ public:
 	}
 
 	/**	Non-member function	**/
-
-	/*	Relational operators	*/
 
 	friend bool operator==(const map &left, const map &rhs) {
 		if (left._size == rhs._size)

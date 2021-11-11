@@ -11,7 +11,7 @@ public:
 	typedef typename iterator_traits<iterator_type>::iterator_category	iterator_category;	//	Preserves Iterator's category
 	typedef typename iterator_traits<iterator_type>::value_type			value_type;			//	Preserves Iterator's value type
 	typedef typename iterator_traits<iterator_type>::difference_type	difference_type;	//	Preserves Iterator's difference type
-	typedef typename iterator_traits<iterator_type>::pointer			pointer;		//	Preserves Iterator's pointer type
+	typedef typename iterator_traits<iterator_type>::pointer			pointer;			//	Preserves Iterator's pointer type
 	typedef typename iterator_traits<iterator_type>::reference			reference;			//	Preserves Iterator's reference type
 private:
 	iterator_type _pointer;
@@ -20,8 +20,8 @@ public:
 
 	vec_iterator() : _pointer() {}
 
-	template<class U>
-	vec_iterator(const vec_iterator<U> &other) : _pointer(other.base()) {}
+	template<class V>
+	vec_iterator(const vec_iterator<V> &other) : _pointer(other.base()) {}
 
 	vec_iterator(const vec_iterator &other) : _pointer(other._pointer) {}
 
@@ -95,8 +95,20 @@ public:
 	friend bool operator>(const vec_iterator &left, const vec_iterator &right)	{ return left._pointer > right._pointer; }
 	friend bool operator>=(const vec_iterator &left, const vec_iterator &right)	{ return left._pointer >= right._pointer; }
 
+	template<class T>
+	friend bool operator==(const vec_iterator &left, const vec_iterator<T> &right)	{ return left._pointer == right.base(); }
+	template<class T>
+	friend bool operator!=(const vec_iterator &left, const vec_iterator<T> &right)	{ return left._pointer != right.base(); }
+	template<class T>
+	friend bool operator<(const vec_iterator &left, const vec_iterator<T> &right)	{ return left._pointer < right.base(); }
+	template<class T>
+	friend bool operator<=(const vec_iterator &left, const vec_iterator<T> &right)	{ return left._pointer <= right.base(); }
+	template<class T>
+	friend bool operator>(const vec_iterator &left, const vec_iterator<T> &right)	{ return left._pointer > right.base(); }
+	template<class T>
+	friend bool operator>=(const vec_iterator &left, const vec_iterator<T> &right)	{ return left._pointer >= right.base(); }
+
 	friend vec_iterator operator+(difference_type num, const vec_iterator &iter) { return iter + num; };
-	friend vec_iterator operator-(difference_type num, const vec_iterator &iter) { return iter - num; };
 };
 }
 
