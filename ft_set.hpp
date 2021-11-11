@@ -267,23 +267,35 @@ public:
 	}//	Count elements with a specific key (public member function )
 
 	iterator lower_bound(const key_type& key) {
-		iterator it = begin(), ite = end();
+		node_pointer node = _root,  tmp = NULL;
 
-		while (it != ite and _val_comp(*it, key))
-			++it;
-		while (it != ite and _val_comp(*it, key))
-			--it;
-		return it;
+		while (node) {
+			if (_val_comp(*node->value, key))
+				node = node->right;
+			else {
+				tmp = node;
+				node = node->left;
+			}
+		}
+		if (not tmp)
+			return end();
+		return tmp;
 	}
 
 	iterator upper_bound(const key_type& key) {
-		iterator it = begin(), ite = end();
+		node_pointer node = _root,  tmp = NULL;
 
-		while (it != ite and _val_comp(*it, key))
-			++it;
-		while (it != ite and not _val_comp(key, *it))
-			++it;
-		return it;
+		while (node) {
+			if (not _val_comp(key, *node->value))
+				node = node->right;
+			else {
+				tmp = node;
+				node = node->left;
+			}
+		}
+		if (not tmp)
+			return end();
+		return tmp;
 	}
 
 	pair<iterator,iterator> equal_range(const key_type& key) { return ft::make_pair<iterator,iterator>(lower_bound(key), upper_bound(key)); }//	Get range of equal elements (public member function )

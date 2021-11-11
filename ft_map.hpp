@@ -404,48 +404,72 @@ public:
 
 	/*	Return iterator to lower bound	*/
 	iterator lower_bound(const key_type& key) {
-		iterator it = begin(), ite = end();
+		node_pointer node = _root,  tmp = NULL;
 		key_compare k_comp;
 
-		while (it != ite and k_comp(it->first, key))
-			++it;
-		while (it != ite and k_comp(it->first, key))
-			--it;
-		return it;
+		while (node) {
+			if (k_comp(node->value->first, key))
+				node = node->right;
+			else {
+				tmp = node;
+				node = node->left;
+			}
+		}
+		if (not tmp)
+			return end();
+		return tmp;
 	}
 
 	const_iterator lower_bound(const key_type &key) const {
-		const_iterator it = begin(), ite = end();
+		node_pointer node = _root,  tmp = NULL;
 		key_compare k_comp;
 
-		while (it != ite and k_comp(it->first, key))
-			++it;
-		while (it != ite and k_comp(it->first, key))
-			--it;
-		return it;
+		while (node) {
+			if (k_comp(node->value->first, key))
+				node = node->right;
+			else {
+				tmp = node;
+				node = node->left;
+			}
+		}
+		if (not tmp)
+			return end();
+		return tmp;
 	}
 
 	/*	Return iterator to upper bound	*/
 	iterator upper_bound(const key_type& key) {
-		iterator it = begin(), ite = end();
+		node_pointer node = _root,  tmp = NULL;
 		key_compare k_comp;
 
-		while (it != ite and k_comp(it->first, key))
-			++it;
-		while (it != ite and not k_comp(key, it->first))
-			++it;
-		return it;
+		while (node) {
+			if (not k_comp(key, node->value->first))
+				node = node->right;
+			else {
+				tmp = node;
+				node = node->left;
+			}
+		}
+		if (not tmp)
+			return end();
+		return tmp;
 	}
 
 	const_iterator upper_bound(const key_type& key) const {
-		const_iterator it = begin(), ite = end();
+		node_pointer node = _root,  tmp = NULL;
 		key_compare k_comp;
 
-		while (it != ite and k_comp(it->first, key))
-			++it;
-		while (it != ite and not k_comp(key, it->first))
-			++it;
-		return it;
+		while (node) {
+			if (not k_comp(key, node->value->first))
+				node = node->right;
+			else {
+				tmp = node;
+				node = node->left;
+			}
+		}
+		if (not tmp)
+			return end();
+		return tmp;
 	}
 
 	/*	Get range of equal elements	*/

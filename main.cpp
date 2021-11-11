@@ -70,6 +70,19 @@ public:
 };
 
 int main() {
-	ft::set<int>::iterator it;
+//	namespace ft = std;
+	ft::map<A,int> a;
+
+	a.insert(ft::make_pair(00, 2));
+	a.insert(ft::make_pair(10, 2));
+	a.insert(ft::make_pair(20, 2));
+	a.insert(ft::make_pair(30, 2));
+	a.insert(ft::make_pair(40, 2));
+	a.insert(ft::make_pair(50, 2));
+	a.insert(ft::make_pair(60, 2));
+	a.insert(ft::make_pair(70, 2));
+	std::cout << "\n";
+	std::cout << std::boolalpha << a.upper_bound(30)->first << '\n';
+	std::cout << "\n";
 }
 
