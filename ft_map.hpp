@@ -185,7 +185,7 @@ public:
 			else
 				return node->value->second;
 		}
-		throw std::out_of_range("map");
+		throw std::out_of_range("map::at:  key not found");
 	}
 	const mapped_type &at(const key_type& key) const {
 		node_pointer node = _root;
@@ -198,7 +198,7 @@ public:
 			else
 				return node->value->second;
 		}
-		throw std::out_of_range("map");
+		throw std::out_of_range("map::at:  key not found");
 	}
 
 	/**	Modifier	**/
