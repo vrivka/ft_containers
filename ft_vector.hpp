@@ -254,7 +254,7 @@ public:
 		}
 		_size++;
 		return _pointer + pos_index;
-	}					// single element
+	}
 
 	void insert(iterator position, size_type num, const value_type &value) {
 		size_type pos_index = position - begin(), index;
@@ -290,18 +290,17 @@ public:
 			size_type idx;
 			index = _size - 1;
 
-			for (idx = num; idx > 0; --idx, --index)
-				_allocator.construct(_pointer + _size + idx - 1, _pointer[index]);
-			for (++index; index != pos_index; --index)
-				_pointer[index + num - 1] = _pointer[index - 1];
-			for (idx = num; idx > 0; --idx)
-				_pointer[index + idx - 1] = value;
+			for (idx = num - 1; idx > 0; --idx, --index)
+				_allocator.construct(_pointer + _size + idx, _pointer[index]);
+			for (idx = 0; idx < num; ++idx)
+				_pointer[idx + pos_index] = value;
 		}
 		_size += num;
-	}		// fill
+	}
 
 	template<class InputIterator>
-	typename enable_if< not is_integral<InputIterator>::value >::type insert(iterator position, InputIterator first, InputIterator last) {
+	typename enable_if< not is_integral<InputIterator>::value >::type
+	insert(iterator position, InputIterator first, InputIterator last) {
 		size_type pos_index = position - begin(), num = std::distance(first, last), index;
 
 		if (_capacity == 0) {
@@ -338,15 +337,13 @@ public:
 			index = _size - 1;
 			size_type temp_index;
 
-			for (temp_index = num; temp_index > 0; --temp_index, --index)
-				_allocator.construct(_pointer + _size + temp_index - 1, _pointer[index]);
-			for (index++; index != pos_index; --index)
-				_pointer[index + num - 1] = _pointer[index - 1];
-			for (temp_index = num; temp_index > 0; --temp_index)
-				_pointer[index + temp_index - 1] = *(first++);
+			for (temp_index = num - 1; temp_index > 0; --temp_index, --index)
+				_allocator.construct(_pointer + _size + temp_index, _pointer[index]);
+			for (temp_index = 0; temp_index < num; ++temp_index)
+				_pointer[temp_index + pos_index] = *(first++);
 		}
 		_size += num;
-	}	// range
+	}
 
 	iterator erase(iterator position) {
 		for (size_type pos_index = position - begin(); pos_index < _size - 1; ++pos_index)
