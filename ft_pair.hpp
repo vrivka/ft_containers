@@ -1,9 +1,10 @@
 #ifndef FT_PAIR_HPP
 #define FT_PAIR_HPP
 
+
 namespace ft {
 template<class T1, class T2>
-class pair {
+struct pair {
 public:
 	typedef	T1	first_type;	//	The first template parameter
 	typedef	T2	second_type;//	The second template parameter
@@ -36,20 +37,16 @@ public:
 	/**	Non-member functions	**/
 
 	friend bool operator==(const pair &left, const pair &right) {
-		if (left.first == right.first)
-			if (left.second == right.second)
-				return true;
+		if (left.first == right.first and left.second == right.second)
+			return true;
 		return false;
 	}
 
 	friend bool operator!=(const pair &left, const pair &right) { return !(left == right); }
 
 	friend bool operator<(const pair &left, const pair &right) {
-		if (left.first < right.first)
+		if (left.first < right.first or (not (right.first < left.first) and left.second < right.second))
 			return true;
-		if (!(right.first < left.first))
-			if (left.second < right.second)
-				return true;
 		return false;
 	}
 

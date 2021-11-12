@@ -16,6 +16,7 @@ public:
 private:
 	iterator_type _pointer;
 public:
+
 	/** Constructors **/
 
 	vec_iterator() : _pointer() {}
@@ -35,9 +36,8 @@ public:
 
 	pointer base() const { return _pointer; }
 
-	reference operator*() const throw() { return *_pointer; }
+	reference operator*() const { return *_pointer; }
 
-	vec_iterator operator+(difference_type num) { return _pointer + num; }
 	vec_iterator operator+(difference_type num) const { return _pointer + num; }
 
 	vec_iterator &operator++() {
@@ -55,10 +55,8 @@ public:
 		return *this;
 	}
 
-	vec_iterator operator-(difference_type num) { return _pointer - num; }
 	vec_iterator operator-(difference_type num) const { return _pointer - num; }
 
-	difference_type operator-(vec_iterator other) { return _pointer - other._pointer; }
 	difference_type operator-(vec_iterator other) const { return _pointer - other._pointer; }
 
 	vec_iterator &operator--() {
@@ -83,10 +81,10 @@ public:
 		return *this;
 	}
 
-	reference operator[](difference_type num) { return _pointer[num]; }
+
 	reference operator[](difference_type num) const { return _pointer[num]; }
 
-	/*Non-member functions */
+	/**	Non-member functions	**/
 
 	friend bool operator==(const vec_iterator &left, const vec_iterator &right)	{ return left._pointer == right._pointer; }
 	friend bool operator!=(const vec_iterator &left, const vec_iterator &right)	{ return left._pointer != right._pointer; }

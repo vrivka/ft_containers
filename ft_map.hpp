@@ -2,7 +2,6 @@
 #define FT_MAP_HPP
 
 #include "RBNode.hpp"
-#include <iostream>
 #include <memory>
 #include "ft_pair.hpp"
 #include "ft_reverse_iterator.hpp"
@@ -49,14 +48,6 @@ private:
 	node_pointer		_root;
 	node_pointer		_head;
 	size_type			_size;
-
-	void print_lvl() {
-		int height = node_type::max_height(_root);
-		for (size_type index = 0; index < height; index++) {
-			node_type::print_lvl(_root, index, 0);
-			std::cout << std::endl;
-		}
-	}
 
 	void disable_head() {
 		if (_root)

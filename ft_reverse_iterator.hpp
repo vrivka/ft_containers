@@ -32,12 +32,10 @@ public:
 
 	/**	Member functions	**/
 
-	iterator_type base() { return _iterator; }
 	iterator_type base() const { return _iterator; }
 
 	reference operator*() const { return *(--base()); }
 
-	reverse_iterator operator+(difference_type num) { return _iterator - num; }
 	reverse_iterator operator+(difference_type num) const { return _iterator - num; }
 
 	reverse_iterator &operator++() {
@@ -55,7 +53,6 @@ public:
 		return *this;
 	}
 
-	reverse_iterator operator-(difference_type num) { return _iterator + num; }
 	reverse_iterator operator-(difference_type num) const { return _iterator + num; }
 
 	reverse_iterator &operator--() {
@@ -82,7 +79,6 @@ public:
 		return *this;
 	}
 
-	reference operator[](difference_type num) { return _iterator[-num - 1]; }
 	reference operator[](difference_type num) const { return _iterator[-num - 1]; }
 
 	/** Non-member functions **/
@@ -107,7 +103,7 @@ public:
 	template<class T>
 	friend bool operator>=(const reverse_iterator &left, const reverse_iterator<T> &right)	{ return left._iterator <= right.base(); }
 
-	friend reverse_iterator operator+(reverse_iterator::difference_type num, const reverse_iterator &rev_it) { return rev_it + num; }
+	friend reverse_iterator operator+(difference_type num, const reverse_iterator &rev_it) { return rev_it + num; }
 
 	template <class T, class V>
 	friend difference_type operator-(const reverse_iterator<T> &left, const reverse_iterator<V> &right) { return right.base().base() - left.base().base(); }

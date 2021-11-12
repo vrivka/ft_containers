@@ -1,11 +1,9 @@
 #ifndef FT_UTILITIES_HPP
 #define FT_UTILITIES_HPP
 
-#include "ft_pair.hpp"
-#include "ft_tree_iterator.hpp"
-#include "RBNode.hpp"
 
 namespace ft {
+	/**	integral_constant struct for is_integral	**/
 	template <class T, T v>
 	struct integral_constant {
 		static const T value = v;
@@ -14,11 +12,14 @@ namespace ft {
 		operator value_type() { return value; }
 	};
 
+	/**	integral_constant instantiations	**/
 	typedef integral_constant<bool,true>	true_type;
 	typedef integral_constant<bool,false>	false_type;
 
+	/**	is_integral base struct	**/
 	template<typename> struct is_integral_base : false_type {};
 
+	/**	is_integral specializations	**/
 	template<> struct is_integral_base<bool> : true_type {};
 	template<> struct is_integral_base<char> : true_type {};
 	template<> struct is_integral_base<char16_t> : true_type {};
@@ -35,17 +36,20 @@ namespace ft {
 	template<> struct is_integral_base<unsigned long int> : true_type {};
 	template<> struct is_integral_base<unsigned long long int> : true_type {};
 
+	/**	is_integral struct	**/
 	template <class T>
 	struct is_integral : is_integral_base<T> {};
 
+	/**	enable_if struct	**/
 	template<bool Cond, class T = void>
 	struct enable_if {};
 
 	template<class T>
 	struct enable_if<true, T> { typedef T type; };
 
+	/**	iterator_traits classes	**/
 	template <class Iterator>
-	struct iterator_traits {
+	class iterator_traits {
 	public:
 		typedef typename Iterator::difference_type		difference_type;
 		typedef	typename Iterator::value_type			value_type;
@@ -72,6 +76,7 @@ namespace ft {
 		typedef	std::random_access_iterator_tag	iterator_category;
 	};
 
+	/**	Equal compare	**/
 	template<class InputIterator1, class InputIterator2>
 	bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2) {
 		for (; first1 != last1; ++first1, ++first2)
@@ -86,6 +91,7 @@ namespace ft {
 		return true;
 	}
 
+	/**	Lexicographical compare	**/
 	template<class InputIterator1, class InputIterator2>
 	bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2) {
 		for (; first1 != last1; ++first1, ++first2) {

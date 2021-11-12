@@ -1,6 +1,7 @@
 #ifndef FT_TREE_ITERATOR_HPP
 #define FT_TREE_ITERATOR_HPP
 
+
 namespace ft {
 template<class V, class VT>
 class tree_iterator {
@@ -12,29 +13,21 @@ public:
 	typedef value_type&						reference;			//	Preserves Iterator's reference type
 	typedef std::bidirectional_iterator_tag	iterator_category;	//	Preserves Iterator's category
 private:
-	iterator_type iter;
-	iterator_type head;
-	int64_t overflow;
+	iterator_type	_iter;
+	iterator_type	_head;
+	int64_t			_overflow;
 public:
+
 	/**	Constructors	**/
 
-	tree_iterator() : iter(), head(), overflow(0) {};
+	tree_iterator() : _iter(), _head(), _overflow(0) {};
 
-	tree_iterator(const tree_iterator &other) : iter(other.iter), head(other.head), overflow(other.overflow) {};
+	tree_iterator(const tree_iterator &other) : _iter(other._iter), _head(other._head), _overflow(other._overflow) {};
 
-	tree_iterator(iterator_type x) {
-		if (x and x->parent) {
-			overflow = 0;
-			iter = x;
-			head = x;
-			while (head->parent)
-				head = head->parent;
-		}
-		else if (x and not x->parent) {
-			overflow = 1;
-			iter = x;
-			head = x;
-		}
+	tree_iterator(iterator_type x) : _iter(x), _head(x) {
+		_overflow = x->parent ? 0 : 1;
+		while (_head->parent)
+			_head = _head->parent;
 	};
 
 	/**	Destructors	**/
@@ -43,23 +36,23 @@ public:
 
 	/**	Member functions	**/
 
-	reference operator*() const throw() { return *(iter->value); };
+	reference operator*() const { return *(_iter->value); };
 
 	tree_iterator &operator++() {
-		if (not overflow) {
-			iter = iter->increment(iter);
-			if (not iter or iter == head) {
-				iter = head;
-				overflow++;
+		if (not _overflow) {
+			_iter = _iter->increment(_iter);
+			if (not _iter or _iter == _head) {
+				_iter = _head;
+				_overflow++;
 			}
 		}
-		else if (overflow == -1) {
-			overflow++;
-			iter = head->min(head);
+		else if (_overflow == -1) {
+			_overflow++;
+			_iter = _head->min(_head);
 		}
 		else {
-			iter++;
-			overflow++;
+			_iter++;
+			_overflow++;
 		}
 		return *this;
 	};
@@ -71,20 +64,20 @@ public:
 	};
 
 	tree_iterator &operator--() {
-		if (not overflow) {
-			iter = iter->decrement(iter);
-			if (not iter or iter == head) {
-				overflow--;
-				iter = head;
+		if (not _overflow) {
+			_iter = _iter->decrement(_iter);
+			if (not _iter or _iter == _head) {
+				_overflow--;
+				_iter = _head;
 			}
 		}
-		else if (overflow == 1) {
-			overflow--;
-			iter = head->max(head);
+		else if (_overflow == 1) {
+			_overflow--;
+			_iter = _head->max(_head);
 		}
 		else {
-			iter--;
-			overflow--;
+			_iter--;
+			_overflow--;
 		}
 		return *this;
 	};
@@ -95,22 +88,22 @@ public:
 		return tmp;
 	};
 
-	pointer operator->() const { return iter->value; };
+	pointer operator->() const { return _iter->value; };
 
 	tree_iterator &operator=(const tree_iterator &other) {
 		if (this == &other)
 			return *this;
-		this->iter = other.iter;
-		this->head = other.head;
-		this->overflow = other.overflow;
+		this->_iter = other._iter;
+		this->_head = other._head;
+		this->_overflow = other._overflow;
 		return *this;
 	};
 
-	/*Non-member functions */
+	/**	Non-member functions	**/
 
-	friend bool operator==(const tree_iterator<V, VT> &lhs, const tree_iterator<V, VT> &rhs) { return lhs.iter == rhs.iter; };
+	friend bool operator==(const tree_iterator<V, VT> &lhs, const tree_iterator<V, VT> &rhs) { return lhs._iter == rhs._iter; };
 
-	friend bool operator!=(const tree_iterator<V, VT> &lhs, const tree_iterator<V, VT> &rhs) { return lhs.iter != rhs.iter; };
+	friend bool operator!=(const tree_iterator<V, VT> &lhs, const tree_iterator<V, VT> &rhs) { return lhs._iter != rhs._iter; };
 };
 
 template<class I, class VT>
@@ -139,7 +132,7 @@ public:
 
 	/**	Member functions	**/
 
-	reference operator*() const throw() { return *iter; };
+	reference operator*() const { return *iter; };
 
 	tree_const_iterator &operator++() {
 		++iter;
@@ -172,7 +165,7 @@ public:
 		return *this;
 	};
 
-	/*Non-member functions */
+	/**	Non-member functions	**/
 
 	friend bool operator==(const tree_const_iterator<I, VT> &lhs, const tree_const_iterator<I, VT> &rhs) { return lhs.iter == rhs.iter; };
 

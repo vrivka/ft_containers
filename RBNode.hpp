@@ -25,10 +25,13 @@ public:
 	/**	Allocators	**/
 	allocator_type		allocator;
 	node_allocator_type	node_allocator;
+
 	/**	Value	**/
 	pointer				value;
+
 	/**	Node color	**/
 	int16_t				color;
+
 	/**	Node branches	**/
 	node_pointer		parent;
 	node_pointer		left;
@@ -50,32 +53,6 @@ public:
 		while (node->right)
 			node = node->right;
 		return node;
-	}
-
-	/*	Max height of tree	*/
-	static int max_height(RBNode *node) {
-		if (not node)
-			return 0;
-		int left_h = max_height(node->left);
-		int right_h = max_height(node->right);
-		if (left_h > right_h)
-			return left_h + 1;
-		else
-			return right_h + 1;
-	}
-
-	/*	Print tree by level	*/
-	static void print_lvl(RBNode *node, int print_lvl, int lvl) {
-		if (node) {
-			if (print_lvl == lvl) {
-				std::cout << node->value->first;
-				std::cout << (node->color == RED ? 'r' : 'b') << ' ';
-			}
-			else {
-				print_lvl(node->left, print_lvl, lvl + 1);
-				print_lvl(node->right, print_lvl, lvl + 1);
-			}
-		}
 	}
 
 	/*	Tree balancer after inserting	*/
@@ -202,7 +179,8 @@ public:
 		}
 	}
 
-	/*	Destructor	*/
+	/**	Destructor	**/
+
 	~RBNode() {
 		if (left) {
 			node_allocator.destroy(left);
@@ -218,7 +196,8 @@ public:
 		}
 	}
 
-	/*	Assign operator overload	*/
+	/**	Assign operator overload	**/
+
 	node_reference operator=(const node_reference other) {
 		if (this == &other)
 			return *this;
@@ -250,6 +229,7 @@ public:
 	}
 
 private:
+
 	/*	Get grandparent of node (node->parent->parent)	*/
 	static node_pointer grandparent(node_pointer node) { return (node and node->parent ? node->parent->parent : NULL); }
 
